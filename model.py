@@ -260,7 +260,7 @@ def selfTrain(graphsage, labels,train, test, confList, temperature = 1, update_i
             test_output, _ = torch.max(F.softmax(test_scores,dim = 1), dim = 1)
             y_pred = F.softmax(test_scores, dim = 1).data.numpy().argmax(axis=1)
             
-            conf_test_nod = list((test_output > 0.70).nonzero().data.numpy().squeeze())
+            conf_test_nod = list((test_output > 0.90).nonzero().data.numpy().squeeze())
             labels_pse[ test[conf_test_nod]] = calPseLb(F.softmax(test_scores, dim = 1))[conf_test_nod]
             train_set = train + list(test[conf_test_nod])
             #print(test_output)
