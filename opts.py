@@ -7,8 +7,6 @@ Created on Tue Feb 12 12:02:29 2019
 """
 
 import argparse
-import os
-import torch
 
 
 class BaseOptions():

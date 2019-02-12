@@ -8,27 +8,12 @@ Created on Tue Feb 12 11:32:45 2019
 import torch
 import torch.nn as nn
 from torch.nn import init
-from torch.autograd import Variable
 import networkx as nx
 import numpy as np
-import time
 import random
-from sklearn.metrics import accuracy_score
-from torch.optim.lr_scheduler import StepLR
 from collections import defaultdict
-import torch.nn.functional as F
-from aggregators import MeanAggregator
-from encoders import SupervisedGraphSage
-import matplotlib.pyplot as plt
-from math import log
-from temperature_scaling import ModelWithTemperature
-import numpy as np
-import random
 import json
-import sys
-import os
 import pickle as pkl
-import networkx as nx
 from networkx.readwrite import json_graph
 import scipy.sparse as sp
 
