@@ -21,9 +21,22 @@ on the Cora and Pubmed datasets.
 
 
         
-def run_cora(device, opt):
+def run_cora(device):
 
     filetime = datetime.datetime.now()
+    opt = TrainOptions().parse()
+    if opt.dataset  == 'cora':
+        opt.k = 80
+    elif opt.dataset  =='pubmed':
+        opt.k = 50
+        opt.lr_pre = 0.04
+    elif opt.dataset  == 'ppi':
+        opt.lr_pre = 0.06
+        opt.k = 500
+        opt.epoch = 2000
+    elif opt.dataset  == 'reddit':
+        opt.k = 512
+        opt.epoch = 3000
     writetofile(opt, opt.res_path, filetime)
     np.random.seed(1)
     random.seed(1)
@@ -196,22 +209,8 @@ if __name__ == "__main__":
         device = 'cuda'
     else:
         device = 'cpu'
-    data = 'cora'
-    opt.dataset = data
-    if data == 'cora':
-        opt.k = 80
-    elif data =='pubmed':
-        opt.k = 50
-        opt.lr_pre = 0.04
-    elif data == 'ppi':
-        opt.lr_pre = 0.06
-        opt.k = 500
-        opt.epoch = 2000
-    elif data == 'reddit':
-        opt.k = 512
-        opt.epoch = 3000
             
-        loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
+        loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
         ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
         f1 = plt.figure()
         ax1 = f1.add_subplot(111)
