@@ -60,9 +60,9 @@ def run_cora(device):
     confList = Variable(torch.zeros(num_nodes)).to(device) 
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     for batch in range(opt.epoch):
-        #batch_nodes = train[:20000 ]
-        #random.shuffle(train)
-        batch_nodes,_ = sampling(train, confList, k = opt.k)
+        batch_nodes = train[:300]
+        random.shuffle(train)
+        #batch_nodes,_ = sampling(train, confList, k = opt.k)
         start_time = time.time()
         optimizer.zero_grad()
         scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
