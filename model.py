@@ -31,13 +31,13 @@ def run_cora(device):
         opt.k = 50
         opt.lr_pre = 0.04
     elif opt.dataset  == 'ppi':
-        opt.lr_pre = 0.03
+        opt.lr_pre = 0.02
         opt.k = 40
-        opt.epoch = 6000
+        opt.epoch = 1000
     elif opt.dataset  == 'reddit':
-        opt.lr_pre = 0.06
-        opt.k = 80
-        opt.epoch = 60000
+        opt.lr_pre = 0.02
+        opt.k = 40
+        opt.epoch = 1000
     writetofile(opt, opt.res_path, filetime)
     np.random.seed(1)
     random.seed(1)
