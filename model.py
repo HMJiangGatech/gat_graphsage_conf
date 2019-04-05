@@ -196,21 +196,20 @@ if __name__ == "__main__":
         device = 'cuda'
     else:
         device = 'cpu'
-    for data in ['cora', 'pubmed', 'ppi', 'reddit']:
-        opt = TrainOptions().parse()
-        opt.dataset = data
-        if data == 'cora':
-            opt.k = 80
-        elif data =='pubmed':
-            opt.k = 50
-            opt.lr_pre = 0.04
-        elif data == 'ppi':
-            opt.lr_pre = 0.06
-            opt.k = 500
-            opt.epoch = 2000
-        elif data == 'reddit':
-            opt.k = 512
-            opt.epoch = 3000
+    data = 'cora'
+    opt.dataset = data
+    if data == 'cora':
+        opt.k = 80
+    elif data =='pubmed':
+        opt.k = 50
+        opt.lr_pre = 0.04
+    elif data == 'ppi':
+        opt.lr_pre = 0.06
+        opt.k = 500
+        opt.epoch = 2000
+    elif data == 'reddit':
+        opt.k = 512
+        opt.epoch = 3000
             
         loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
         ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
