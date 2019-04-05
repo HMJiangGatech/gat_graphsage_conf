@@ -54,7 +54,7 @@ def run_cora(device, opt):
         scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
         conf,_ = scores.max(dim = 1)
         confList[batch_nodes] = conf #update confidence
-        l_los = xent(scores, Variable(torch.LongTensor(labels[np.array(batch_nodes)])).squeeze())
+        l_los = xent(scores, Variable(torch.LongTensor(labels[np.array(batch_nodes)]).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).squeeze())
         
         loss = l_los 
         
@@ -67,7 +67,7 @@ def run_cora(device, opt):
         times.append(end_time-start_time)
         loss_Data.append(loss.data)
         if batch%100 == 0:
-            out_putT = F.softmax(graphsage(test),dim = 1).data.numpy().argmax(axis=1)
+            out_putT = F.softmax(graphsage(test),dim = 1).data.cpu().numpy().argmax(axis=1)
             print ("Validation ACCU:", accuracy_score(labels[test],  out_putT) )
             #print (batch, loss.data[0])
             
@@ -75,9 +75,9 @@ def run_cora(device, opt):
         
         
     test_output =  graphsage(test)
-    summary(test, labels, test_output.data.numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
-    print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.numpy().argmax(axis=1)))
-    writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  F.softmax(test_output,dim = 1).data.numpy().argmax(axis=1))), opt.res_path, filetime)
+    summary(test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
+    print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
+    writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
     loss_DataSelf = []
     ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
     writetofile("ECE error:"+str(ece), opt.res_path, filetime)
