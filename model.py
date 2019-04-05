@@ -210,14 +210,14 @@ if __name__ == "__main__":
     else:
         device = 'cpu'
             
-        loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
-        ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
-        f1 = plt.figure()
-        ax1 = f1.add_subplot(111)
-        plt.plot(range(len(loss_Data)), loss_Data)
-        plt.draw()
-        plt.show()
-        f1.savefig("result/lossData"+filetime.strftime(ISOTIMEFORMAT)+".png", format="PNG")
+    loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
+    ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
+    f1 = plt.figure()
+    ax1 = f1.add_subplot(111)
+    plt.plot(range(len(loss_Data)), loss_Data)
+    plt.draw()
+    plt.show()
+    f1.savefig("result/lossData"+filetime.strftime(ISOTIMEFORMAT)+".png", format="PNG")
 
     #loss_Data_p = run_pubmed() #0.808  time: 0.4415 #0.832  avg time 15.62  #80.2    
     #plt.plot(range(len(loss_Data_p)), loss_Data_p) 
