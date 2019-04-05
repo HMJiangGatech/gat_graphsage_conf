@@ -45,6 +45,7 @@ class MeanAggregator(nn.Module):
         self.linear = nn.Linear(embed_dim ,self.feature_dim*2 )
         self.fc1 = nn.LeakyReLU(self.alpha)
         self.fc2 = nn.LeakyReLU(self.alpha)
+        self.device = device
 
     
     
@@ -67,7 +68,7 @@ class MeanAggregator(nn.Module):
         #nodes index dict
         unique_nodes = {n:i for i,n in enumerate(unique_nodes_list)}
         #mask ajdancecy matrix
-        mask = Variable(torch.zeros(len(samp_neighs), len(unique_nodes)))
+        mask = Variable(torch.zeros(len(samp_neighs), len(unique_nodes))).to(self.device)  if torch.cuda.is_available() else Variable(torch.zeros(len(samp_neighs), len(unique_nodes)))
         column_indices = [unique_nodes[n] for samp_neigh in samp_neighs for n in samp_neigh]   
         row_indices = [i for i in range(len(samp_neighs)) for j in range(len(samp_neighs[i]))]
         
@@ -108,7 +109,7 @@ class MeanAggregator(nn.Module):
             nodesData = nodes
         nodes_idx= [unique_nodes[n ] for n in nodesData]
         e = e[ nodes_idx ]
-        zero_vec = -9e15*torch.ones_like(e)
+        zero_vec = -9e15*torch.ones_like(e).to(self.device)  
         
         attention = torch.where(mask > 0, mask*e, zero_vec)
         attention = F.softmax(attention, dim=1)
