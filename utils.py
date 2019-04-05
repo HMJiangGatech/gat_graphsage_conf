@@ -469,8 +469,8 @@ def plotDiagram(dataset, model, labels, nBins, time):
     before_temperature_ece = ece_criterion(logits, labels).item()
     outputs  = F.softmax(logits, dim = 1).data
     confidence,pred = outputs.max(dim = 1)
-    pred = pred.numpy()
-    confidence = confidence.numpy()
+    pred = pred.cpu().numpy()
+    confidence = confidence.cpu().numpy()
     Slabels = [l[0] for _,l in sorted(zip(confidence,labels))]
     Spred = [l for _,l in sorted(zip(confidence,pred))]
     
