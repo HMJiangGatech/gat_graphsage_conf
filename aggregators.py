@@ -91,14 +91,13 @@ class MeanAggregator(nn.Module):
             mask, unique_nodes_list, unique_nodes = self.sampling(nodes, adj_lists)
         #print(mask.shape,'mask')
         #print(len(nodes),'nodes')
-        if self.cuda:
-            embed_matrix = self.features(torch.LongTensor(unique_nodes_list).cuda())
-        else:
-            embed_matrix = self.features(torch.LongTensor(unique_nodes_list))
+        
+        embed_matrix = self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor))
+        
         
         #print(attention.shape, 'attention')
-        f_1 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list)), self.a1)
-        f_2 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list)), self.a2)
+        f_1 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)), self.a1)
+        f_2 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)), self.a2)
         
         
         e = self.leakyrelu(f_1 + f_2.transpose(0,1))
