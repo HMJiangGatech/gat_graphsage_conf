@@ -6,6 +6,7 @@ import numpy as np
 from scipy import stats
 import random
 from torch.nn import init
+from utils import *
 
 """
 Set of modules for aggregating embeddings of neighbors.
@@ -15,7 +16,7 @@ class MeanAggregator(nn.Module):
     """
     Aggregates a node's embeddings using mean of neighbors' embeddings
     """
-    def __init__(self, feature_dim, alpha, embed_dim, embed_attg, cuda=False, gcn=True): 
+    def __init__(self, feature_dim, device, alpha, embed_dim, gcn=True): 
         """
         Initializes the aggregator for a specific graph.
         feature_dim -- feature dimension
@@ -29,28 +30,27 @@ class MeanAggregator(nn.Module):
         super(MeanAggregator, self).__init__()
 
         self.feature_dim = feature_dim
-        self.cuda = cuda
+        self.cuda = False if device=='cpu' else True
         self.gcn = gcn
         self.alpha = alpha
         self.dropout = 0. 
         self.embed_dim = embed_dim
         self.weight = nn.Parameter(
                 nn.init.xavier_normal_(torch.Tensor(embed_dim, self.feature_dim if self.gcn else 2 * self.feature_dim)))
-        self.weight_gAtt = nn.Parameter(
-                torch.FloatTensor(embed_dim, self.feature_dim if self.gcn else 2 * self.feature_dim))
-        self.weight_all = nn.Parameter(
-                torch.FloatTensor(embed_dim, embed_dim*2 if self.gcn else 2 * self.feature_dim))
+        self.fc1 = nn.LeakyReLU(self.alpha)
+        #self.adaptive = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
         self.a1 = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
         self.a2 = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
         self.leakyrelu = nn.LeakyReLU(self.alpha)
         self.linear = nn.Linear(embed_dim ,self.feature_dim*2 )
         self.fc1 = nn.LeakyReLU(self.alpha)
         self.fc2 = nn.LeakyReLU(self.alpha)
-        self.fc_all = nn.LeakyReLU(self.alpha)  
-        self.bn1 = nn.BatchNorm1d(num_features=embed_dim)
-        #self.adaptive = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
-    def sampling(self, nodes, adj_lists, num_sample = 10, gcn = True):
+
     
+    
+    
+    
+    def sampling(self, nodes, adj_lists, num_sample = 10, gcn = True):
         to_neighs = [adj_lists[int(node)] for node in nodes]
         _set = set
         if not num_sample is None:
@@ -78,7 +78,7 @@ class MeanAggregator(nn.Module):
         return mask, unique_nodes_list, unique_nodes
 
         
-    def forward(self, features, nodes, adj_lists,  num_sample=10, gcn = True, att_Weight= None):
+    def forward(self, features, nodes, adj_lists,  sap= False, mask= None, unique_nodes_list= None, unique_nodes= None, num_sample=10, gcn = True):
         """
         nodes --- list of nodes in a batch
         to_neighs --- list of sets, each set is the set of neighbors for node in batch
@@ -87,7 +87,8 @@ class MeanAggregator(nn.Module):
         
         # Local pointers to functions (speed hack)
         self.features = features
-        mask, unique_nodes_list, unique_nodes = self.sampling(nodes, adj_lists)
+        if sap==False:
+            mask, unique_nodes_list, unique_nodes = self.sampling(nodes, adj_lists)
         #print(mask.shape,'mask')
         #print(len(nodes),'nodes')
         if self.cuda:
@@ -95,6 +96,7 @@ class MeanAggregator(nn.Module):
         else:
             embed_matrix = self.features(torch.LongTensor(unique_nodes_list))
         
+        #print(attention.shape, 'attention')
         f_1 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list)), self.a1)
         f_2 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list)), self.a2)
         
@@ -111,33 +113,19 @@ class MeanAggregator(nn.Module):
         
         attention = torch.where(mask > 0, mask*e, zero_vec)
         attention = F.softmax(attention, dim=1)
-        #attention = F.dropout(attention, self.dropout)
         
         
-        
-        #print(attention.shape, 'attention')
         to_feats = attention.mm(embed_matrix)
         
         
         combined = self.fc1(   self.weight.mm(to_feats.t()))
-        
-        '''
-        
-        
-        to_feats_g = att_graph.mm(embed_matrix)
-        combined_g = self.fc2(self.weight_gAtt.mm(to_feats_g.t()))
-        #print(combined.shape, 'combined')
-        combined_all = torch.cat([combined.t(), combined_g.t()],dim = 1)
-        #print(combined_all.shape, 'combined_all')
-        
-        combined_all = self.fc_all(self.weight_all.mm(combined_all.t()))
-        '''
+
         self.embed_matrix = embed_matrix
         
         self.mask, self.unique_nodes_list, self.unique_nodes = mask, unique_nodes_list, unique_nodes
         #print(to_feats.shape,'to')
         #print(combined.shape, 'combined')
         return combined.t()
-    def ret_embedM(self,nodes ):
-        return self.embed_matrix, self.mask, self.unique_nodes_list, self.unique_nodes
-
+    def retData(self):
+        return  self.mask, self.unique_nodes_list, self.unique_nodes
+    

@@ -11,12 +11,13 @@ from aggregators import MeanAggregator
 
 class SupervisedGraphSage(nn.Module):
 
-    def __init__(self, features, adj_lists, feature_dim, embed_dim, num_classes,num_nodes = 2708, alpha = 0.2):
+    def __init__(self, features, adj_lists, feature_dim, embed_dim, num_classes, device, num_nodes = 2708, alpha = 0.2):
         super(SupervisedGraphSage, self).__init__()
         
         self.embed_dim = embed_dim
-        self.layer_1 = MeanAggregator(feature_dim, alpha = alpha, embed_dim = embed_dim, embed_attg = feature_dim) 
-        self.layer_2 = MeanAggregator(embed_dim , alpha = alpha, embed_dim = embed_dim, embed_attg = feature_dim )
+        self.device = device
+        self.layer_1 = MeanAggregator(feature_dim, self.device, alpha = alpha, embed_dim = embed_dim) 
+        self.layer_2 = MeanAggregator(embed_dim , self.device, alpha = alpha, embed_dim = embed_dim )
         self.adj_lists = adj_lists
         self.features = features
         
@@ -26,24 +27,23 @@ class SupervisedGraphSage(nn.Module):
 
         self.weight = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(num_classes, self.embed_dim)))
         #init.xavier_uniform(self.weight)
-
-        self.w = nn.Parameter(torch.FloatTensor([2, 1]), requires_grad=True)
-        
-
-    def forward(self,  nodes, num_sample = 10, gcn = True):
-        
-        
-        x_2 = self.layer_2(lambda nodes: self.layer_1(self.features, nodes, self.adj_lists, num_sample=15, gcn = True, att_Weight= None), nodes, self.adj_lists, num_sample=25, gcn = True, att_Weight= None) 
-        
+    def forward(self,  nodes, actE = False , samL1 = None, samL2= None, num_sample = 10, gcn = True):
+        x_2 = self.layer_2(lambda nodes: self.layer_1(self.features, nodes, self.adj_lists, num_sample=15, gcn = True), nodes, self.adj_lists, num_sample=25, gcn = True) 
+        '''
+        else:
+            mask1, unique_nodes_list1, unique_nodes1 = samL1
+            mask2, unique_nodes_list2, unique_nodes2 = samL2
+            x_2 = self.layer_2(lambda nodes: self.layer_1(self.features, nodes, self.adj_lists, num_sample=15, gcn = True, sap = True, mask = mask1, unique_nodes_list= unique_nodes_list1, unique_nodes= unique_nodes1), nodes, self.adj_lists, num_sample=25, gcn = True,sap = True, mask = mask2, unique_nodes_list= unique_nodes_list2, unique_nodes= unique_nodes2) 
+        '''
+            
        
         #print(self.weight.mm(x_2.t()).t())
         scores = self.weight.mm(x_2.t()).t()
         
-
-        
         #print(scores.shape, 'score')
-
-        return scores
-    
-    
-    
+        self.scores = scores
+        if actE == True:
+            #para1, para2 = self.layer_1.retData(), self.layer_2.retData()
+            return x_2#scores, para1, para2
+        else: 
+            return scores

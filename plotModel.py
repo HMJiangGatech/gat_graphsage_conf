@@ -7,15 +7,35 @@ Created on Tue Feb 12 11:24:29 2019
 """
 
 import networkx as nx
-G = nx.Graph()
-G.add_nodes_from([1, 2, 3,4,5])
-G.add_edges_from([(1, 2,{'weight': 0.1}), (1, 3,{'weight': 10}), (2, 3,{'weight': 9}), (3, 4,{'weight': 5}), (3, 5,{'weight': 2}), (1, 5,{'weight': 1}), (1, 4,{'weight': 0.5})])
-
+from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
-nx.draw_kamada_kawai(G, with_labels=True, font_weight='bold')
 
 
-def plotGraphStrc(features, labels, graph ):
+def featToPos(features, node):
+    pos =  TSNE(n_components=2).fit_transform(features)
+    pos = dict(zip(node,pos))
     
+    return pos
+
+def plotGraphStrc(node, features, labels, graph,time, name = "" ):
     
-nx.draw_networkx_labels(G,[[1,2,3],[5,4,3], [2,5,1], [2,3,5], [6,4,2]],labels,font_size=16)
+
+        
+    Pos = featToPos(features, node)
+    node_labels = dict(zip(node, labels))
+    
+    edges_all = []
+    for edges in graph:
+        if edges in node:
+            for outer in graph[edges]:
+                if outer in node:
+                    edges_all.append( (edges, outer))
+    ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
+    G = nx.Graph()
+    G.add_nodes_from(node)
+    G.add_edges_from(edges_all)
+    f1 = plt.figure()
+    ax1 = f1.add_subplot(111)
+    ax1.set_title(name)
+    nx.draw(G, pos = Pos, label = node_labels,font_size=2, node_color=labels, cmap = plt.cm.Set1, node_size=15)
+    f1.savefig("result/Graph_" + name + time.strftime(ISOTIMEFORMAT)+".png", format="PNG")
