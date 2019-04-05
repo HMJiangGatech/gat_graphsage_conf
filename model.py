@@ -33,7 +33,7 @@ def run_cora(device, opt):
     writetofile('training sample size:'+str(len(train)), opt.res_path, filetime)
     features = nn.Embedding(num_nodes, num_features)
     features.weight = nn.Parameter(torch.FloatTensor(feat_data), requires_grad=False)
-    features.to(device)
+    features = features.to(device)
     graphsage = SupervisedGraphSage(features,  adj_lists, num_features, num_hidden, num_cls, device).to(device)
     
     xent = nn.CrossEntropyLoss()
