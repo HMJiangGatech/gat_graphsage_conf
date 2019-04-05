@@ -33,11 +33,11 @@ def run_cora(device):
     elif opt.dataset  == 'ppi':
         opt.lr_pre = 0.06
         opt.k = 80
-        opt.epoch = 20000
+        opt.epoch = 5000
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 0.06
         opt.k = 80
-        opt.epoch = 30000
+        opt.epoch = 60000
     writetofile(opt, opt.res_path, filetime)
     np.random.seed(1)
     random.seed(1)
@@ -60,7 +60,7 @@ def run_cora(device):
     confList = Variable(torch.zeros(num_nodes)).to(device) 
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     for batch in range(opt.epoch):
-        batch_nodes = train[:300]
+        batch_nodes = train[:80]
         random.shuffle(train)
         #batch_nodes,_ = sampling(train, confList, k = opt.k)
         start_time = time.time()
