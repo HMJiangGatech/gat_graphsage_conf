@@ -31,9 +31,9 @@ def run_cora(device):
         opt.k = 50
         opt.lr_pre = 0.04
     elif opt.dataset  == 'ppi':
-        opt.lr_pre = 0.06
+        opt.lr_pre = 0.03
         opt.k = 40
-        opt.epoch = 10000
+        opt.epoch = 6000
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 0.06
         opt.k = 80
