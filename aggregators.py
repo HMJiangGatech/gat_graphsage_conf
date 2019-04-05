@@ -36,7 +36,7 @@ class MeanAggregator(nn.Module):
         self.dropout = 0. 
         self.embed_dim = embed_dim
         self.weight = nn.Parameter(
-                nn.init.xavier_normal_(torch.Tensor(embed_dim, self.feature_dim if self.gcn else 2 * self.feature_dim)))
+                nn.init.xavier_normal_(torch.Tensor(embed_dim, self.feature_dim if self.gcn else 2 * self.feature_dim).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)))
         self.fc1 = nn.LeakyReLU(self.alpha)
         #self.adaptive = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
         self.a1 = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
