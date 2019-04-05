@@ -103,7 +103,7 @@ class MeanAggregator(nn.Module):
         e = self.leakyrelu(f_1 + f_2.transpose(0,1))
         nodes_idx = []
         if type(nodes) is torch.Tensor:
-            nodesData = nodes.data.numpy()
+            nodesData = nodes.data.cpu().numpy() if torch.cuda.is_available() else nodes.data.numpy()
         else:
             nodesData = nodes
         nodes_idx= [unique_nodes[n ] for n in nodesData]
