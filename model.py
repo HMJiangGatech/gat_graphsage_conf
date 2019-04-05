@@ -33,6 +33,7 @@ def run_cora(device):
     elif opt.dataset  == 'ppi':
         opt.lr_pre = 0.02
         opt.k = 40
+        opt.num_hidden = 30
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 0.02
@@ -43,7 +44,7 @@ def run_cora(device):
     random.seed(1)
     num_hidden = opt.num_hidden
     feat_data, labels, adj_lists, num_nodes,num_features, train, test, val, num_cls  = load_data(opt.dataset, filetime)
-    print(num_cls)
+    print(num_cls, num_features )
     writetofile('training sample size:'+str(len(train)), opt.res_path, filetime)
     features = nn.Embedding(num_nodes, num_features)
     features.weight = nn.Parameter(torch.FloatTensor(feat_data), requires_grad=False)
