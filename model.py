@@ -165,7 +165,7 @@ def run_ppi(device, opt):
                 print ("Validation ACCU of class % d: %.3f" % (clsInd, accuracy_score(labels[test],  out_putT)) )
                 #print (batch, loss.data[0])
                 
-                writetofile("Validation ACCU of class " + str(clsInd) + ':' + str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
+                #writetofile("Validation ACCU of class " + str(clsInd) + ':' + str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
             
             
         test_output =  graphsage(test)
