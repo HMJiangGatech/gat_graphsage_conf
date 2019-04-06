@@ -172,9 +172,9 @@ def load_ppi():
     labels = np.empty((num_nodes,1), dtype=np.int64)
     num_class = 0
     for key in class_map:
+        num_class = len(np.array(class_map[key]))
+        print(class_map[key][2])
         labels[int(key)] = [np.array(class_map[key]).argmax()]
-        if np.array(class_map[key]).argmax() > num_class:
-            num_class = np.array(class_map[key]).argmax()
     node_map = id_map
 
     adj_lists = defaultdict(set)
@@ -228,8 +228,8 @@ def load_reddit():
     adj_lists = defaultdict(set)
     for edge in G.edges():
         
-        paper1 = id_map[str(edge[0])]
-        paper2 = id_map[str(edge[1])]
+        paper1 = edge[0]
+        paper2 = edge[1]
         adj_lists[paper1].add(paper2)
         adj_lists[paper2].add(paper1)
         
