@@ -21,24 +21,10 @@ on the Cora and Pubmed datasets.
 
 
         
-def run_cora(device):
+def run_cora(device, opt):
 
     filetime = datetime.datetime.now()
-    opt = TrainOptions().parse()
-    if opt.dataset  == 'cora':
-        opt.k = 80
-    elif opt.dataset  =='pubmed':
-        opt.k = 50
-        opt.lr_pre = 0.04
-    elif opt.dataset  == 'ppi':
-        opt.lr_pre = 0.02
-        opt.k = 40
-        opt.num_hidden = 30
-        opt.epoch = 1000
-    elif opt.dataset  == 'reddit':
-        opt.lr_pre = 0.02
-        opt.k = 40
-        opt.epoch = 1000
+    opt.res_path = "result/"+opt.dataset+"/result_para"
     writetofile(opt, opt.res_path, filetime)
     np.random.seed(1)
     random.seed(1)
@@ -90,7 +76,7 @@ def run_cora(device):
         
         
     test_output =  graphsage(test)
-    summary(test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
+    summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
     print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
     writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
     loss_DataSelf = []
@@ -122,6 +108,80 @@ def run_cora(device):
     ##plotGraphStrc(train + list(test[rig])+list(test[wrg]),torch.cat( (graphsage(train).data ,test_output.data[rig], test_output.data[wrg]), dim = 0),[0]*len(train)+[1]*len(rig)+[2]*len(wrg) , adj_lists, time = filetime, name = 'after self-train model miscls' )
     return loss_Data+loss_DataSelf, scores, test_output, labels[np.array(batch_nodes)], labels[test], graphsage, test, filetime
 
+def run_ppi(device, opt):
+
+    filetime = datetime.datetime.now()
+    opt.res_path = "result/"+opt.dataset+"/result_para"
+    writetofile(opt, opt.res_path, filetime)
+    np.random.seed(1)
+    random.seed(1)
+    num_hidden = opt.num_hidden
+    feat_data, class_map, adj_lists, num_nodes,num_features, train, test, val, num_cls  = load_data(opt.dataset, filetime)
+    print(num_cls, num_features )
+    writetofile('training sample size:'+str(len(train)), opt.res_path, filetime)
+    features = nn.Embedding(num_nodes, num_features)
+    features.weight = nn.Parameter(torch.FloatTensor(feat_data), requires_grad=False)
+    features = features.to(device)
+    graphsage = SupervisedGraphSage(features,  adj_lists, num_features, num_hidden, num_cls, device).to(device)
+    
+    xent = nn.CrossEntropyLoss()
+    
+
+    optimizer = torch.optim.SGD(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre, momentum = opt.momentum_pre)
+    #encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.8)
+    times = []
+    loss_Data = []
+    confList = Variable(torch.zeros(num_nodes)).to(device) 
+    #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
+    avgECE = []
+    accu= []
+    for clsInd in range(num_cls):
+        labels = np.empty((num_nodes,1), dtype=np.int64)
+        for key in class_map:
+            labels[int(key)] = [np.array(class_map[key])[clsInd]]
+        for batch in range(opt.epoch):
+            #batch_nodes = train[:80]
+            #random.shuffle(train)
+            batch_nodes,_ = sampling(train, confList, k = opt.k)
+            start_time = time.time()
+            optimizer.zero_grad()
+            scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
+            conf,_ = scores.max(dim = 1)
+            confList[batch_nodes] = conf #update confidence
+            l_los = xent(scores, Variable(torch.LongTensor(labels[np.array(batch_nodes)]).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).squeeze())
+            
+            loss = l_los 
+            
+            loss.backward(retain_graph=True)
+            
+            
+            optimizer.step()
+            #encoder_scheduler.step(batch)
+            end_time = time.time()
+            times.append(end_time-start_time)
+            loss_Data.append(loss.data)
+            if batch%100 == 0:
+                out_putT = F.softmax(graphsage(test),dim = 1).data.cpu().numpy().argmax(axis=1)
+                print ("Validation ACCU of class % d: %.3f" % (clsInd, accuracy_score(labels[test],  out_putT)) )
+                #print (batch, loss.data[0])
+                
+                writetofile("Validation ACCU of class " + str(clsInd) + ':' + str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
+            
+            
+        test_output =  graphsage(test)
+        #summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
+        print ("Validation ACCU of class  % d: %.3f" % (accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))))
+        accu.append(accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
+        loss_DataSelf = []
+        ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime, multiL = clsInd)
+        avgECE.append(ece)
+        
+    writetofile("Avg Validation ACCU :"+ str( sum(accu)/ num_cls), opt.res_path, filetime)
+    
+    writetofile(" Avg ECE error :" +str(sum(avgECE)/ num_cls), opt.res_path, filetime)
+    writetofile(" Max ECE error :" +str(max(avgECE)), opt.res_path, filetime)
+    writetofile(" Min ECE error :" +str(min(avgECE)), opt.res_path, filetime)   
+    return loss_Data+loss_DataSelf, scores, test_output, labels[np.array(batch_nodes)], labels[test], graphsage, test, filetime
 
 
   
@@ -211,8 +271,26 @@ if __name__ == "__main__":
         device = 'cuda'
     else:
         device = 'cpu'
-            
-    loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
+    opt = TrainOptions().parse()
+    if opt.dataset  == 'cora':
+        opt.k = 80
+    elif opt.dataset  =='pubmed':
+        opt.k = 50
+        opt.lr_pre = 0.04
+    elif opt.dataset  == 'ppi':
+        opt.lr_pre = 0.02
+        opt.k = 40
+        opt.num_hidden = 30
+        opt.epoch = 1000
+    elif opt.dataset  == 'reddit':
+        opt.lr_pre = 0.02
+        opt.k = 40
+        opt.epoch = 1000
+    if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
+        loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
+    else:
+        loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_ppi(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
+    
     ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
     f1 = plt.figure()
     ax1 = f1.add_subplot(111)

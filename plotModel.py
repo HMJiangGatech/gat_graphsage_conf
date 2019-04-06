@@ -17,7 +17,7 @@ def featToPos(features, node):
     
     return pos
 
-def plotGraphStrc(node, features, labels, graph,time, name = "" ):
+def plotGraphStrc(dataset, node, features, labels, graph,time, name = "" ):
     
 
         
@@ -38,4 +38,4 @@ def plotGraphStrc(node, features, labels, graph,time, name = "" ):
     ax1 = f1.add_subplot(111)
     ax1.set_title(name)
     nx.draw(G, pos = Pos, label = node_labels,font_size=2, node_color=labels, cmap = plt.cm.Set1, node_size=15)
-    f1.savefig("result/Graph_" + name + time.strftime(ISOTIMEFORMAT)+".png", format="PNG")
+    f1.savefig("result/" + dataset+ "/Graph_" + name + time.strftime(ISOTIMEFORMAT)+".png", format="PNG")

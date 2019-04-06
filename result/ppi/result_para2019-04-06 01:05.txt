@@ -1,0 +1,5 @@
+Namespace(dataroot='./data', dataset='ppi', epoch=1000, gamma=0.8, isTrain=True, k=40, lr_pre=0.02, lr_slf=0.03, momentum_pre=0.9, momentum_slf=0.9, num_features=1433, num_hidden=30, res_path='result/ppi/result_para', step_size=100, thres=0.995)
+loading ppi dataset
+training sample size:41297
+Validation ACCU of class 0:0.0013801261829652998
+Validation ACCU of class 0:0.6516167192429022

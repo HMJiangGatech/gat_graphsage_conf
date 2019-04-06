@@ -169,12 +169,9 @@ def load_ppi():
         
     id_map = {conversion(k):int(v) for k,v in id_map.items()}
     
-    labels = np.empty((num_nodes,1), dtype=np.int64)
     num_class = 0
     for key in class_map:
         num_class = len(np.array(class_map[key]))
-        print(class_map[key][2])
-        labels[int(key)] = [np.array(class_map[key]).argmax()]
     node_map = id_map
 
     adj_lists = defaultdict(set)
@@ -198,7 +195,7 @@ def load_ppi():
         else:
             train.append(node_map[str(nod)])
     train, test, val = list(set(train)), list(set(test)), list(set(val))
-    return feats, labels, adj_lists, num_nodes, num_feats, train, test, val, num_class+1
+    return feats, class_map, adj_lists, num_nodes, num_feats, train, test, val, num_class+1
 
 def load_reddit():
     prefix = "example_data/reddit"
@@ -251,19 +248,19 @@ def load_reddit():
 def load_data(dataset, filetime):
     if dataset == 'cora':
         print('loading cora dataset')
-        writetofile('loading cora dataset', 'result/result_para', filetime)
+        writetofile('loading cora dataset', "result/"+dataset+"/result_para", filetime)
         return load_cora()
     elif dataset == 'pubmed':
         print('loading pubmed dataset')
-        writetofile('loading pubmed dataset', 'result/result_para', filetime)
+        writetofile('loading pubmed dataset', "result/"+dataset+"/result_para", filetime)
         return load_pubmed()
     elif dataset == 'ppi':
         print('loading ppi dataset')
-        writetofile('loading ppi dataset', 'result/result_para', filetime)
+        writetofile('loading ppi dataset', "result/"+dataset+"/result_para", filetime)
         return load_ppi()
     elif dataset == 'reddit':
         print('loading reddit dataset')
-        writetofile('loading reddit dataset', 'result/result_para', filetime)
+        writetofile('loading reddit dataset', "result/"+dataset+"/result_para", filetime)
         return load_reddit()
     else:
         print('Have no' + dataset +'data')
@@ -302,7 +299,7 @@ def calPseLb(q, power=2):
     '''
     return np.expand_dims(q.data.numpy().argmax(axis = 1), axis = 1)
 
-def summary(val, labels, pair, num_cls, time, outlog = False, output=None):
+def summary(dataset, val, labels, pair, num_cls, time, outlog = False, output=None):
     true = list(np.zeros(num_cls))
     false = list(np.zeros(num_cls))
     false3 = list(np.zeros(num_cls))
@@ -323,9 +320,9 @@ def summary(val, labels, pair, num_cls, time, outlog = False, output=None):
     print(true/counts)
     print(false)
     print(false3)
-    writetofile(counts, 'result/result_para', time)
-    writetofile(true, 'result/result_para', time)
-    writetofile(true/counts, 'result/result_para', time)
+    writetofile(counts, "result/"+dataset+"/result_para", time)
+    writetofile(true, "result/"+dataset+"/result_para", time)
+    writetofile(true/counts, "result/"+dataset+"/result_para", time)
     
 
 def writetofile(options, path, time):
@@ -461,7 +458,7 @@ def target_distribution(batch: torch.Tensor) -> torch.Tensor:
 
 
 
-def plotDiagram(dataset, model, labels, nBins, time):
+def plotDiagram(dataset, model, labels, nBins, time, multiL = 0):
     ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
     logits = model(dataset)
     ece_criterion = _ECELoss()
@@ -508,7 +505,7 @@ def plotDiagram(dataset, model, labels, nBins, time):
     plt.ylabel('Confidence')
     plt.xlabel('Accuracy')
     plt.title('Reliability Diagram')
-    f1.savefig("result/Diagram of confidence" + time.strftime(ISOTIMEFORMAT)+".png", format="PNG")
+    f1.savefig("result/"+dataset+"/Diagram of confidence" + time.strftime(ISOTIMEFORMAT)+ str(multiL)+".png", format="PNG")
     return before_temperature_ece
     
 
