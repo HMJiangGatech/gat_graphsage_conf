@@ -170,7 +170,7 @@ def run_ppi(device, opt):
             
         test_output =  graphsage(test)
         #summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
-        print ("Validation ACCU of class  % d: %.3f" % (accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))))
+        print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))))
         accu.append(accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
         loss_DataSelf = []
         ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime, multiL = clsInd)
@@ -279,7 +279,7 @@ if __name__ == "__main__":
         opt.lr_pre = 0.04
     elif opt.dataset  == 'ppi':
         opt.lr_pre = 0.02
-        opt.k = 40
+        opt.k = 400
         opt.num_hidden = 30
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
