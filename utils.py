@@ -221,16 +221,15 @@ def load_reddit():
     
     num_class = 0
     for key in class_map:
-        labels[int(key)] = [np.array(class_map[key]).argmax()]
+        labels[id_map[key]] = [np.array(class_map[key]).argmax()]
         if np.array(class_map[key]).argmax() > num_class:
             num_class = np.array(class_map[key]).argmax()
-    node_map = id_map
 
     adj_lists = defaultdict(set)
     for edge in G.edges():
         
-        paper1 = node_map[str(edge[0])]
-        paper2 = node_map[str(edge[1])]
+        paper1 = id_map[str(edge[0])]
+        paper2 = id_map[str(edge[1])]
         adj_lists[paper1].add(paper2)
         adj_lists[paper2].add(paper1)
         
@@ -241,11 +240,11 @@ def load_reddit():
     for edge in G.edges():
         nod = edge[0]
         if G.node[edge[0]]['val'] == True:
-            val.append(node_map[str(nod)])
+            val.append(id_map[str(nod)])
         elif G.node[edge[0]]['test'] ==True:
-            test.append(node_map[str(nod)])
+            test.append(id_map[str(nod)])
         else:
-            train.append(node_map[str(nod)])
+            train.append(id_map[str(nod)])
     train, test, val = list(set(train)), list(set(test)), list(set(val))
     return feats, labels, adj_lists, num_nodes, num_feats, train, test, val, num_class+1
 
