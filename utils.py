@@ -263,7 +263,7 @@ def load_data(dataset, filetime):
         writetofile('loading ppi dataset', 'result/result_para', filetime)
         return load_ppi()
     elif dataset == 'reddit':
-        print('loading ppi dataset')
+        print('loading reddit dataset')
         writetofile('loading reddit dataset', 'result/result_para', filetime)
         return load_reddit()
     else:
