@@ -140,9 +140,9 @@ def run_ppi(device, opt):
         for key in class_map:
             labels[int(key)] = [np.array(class_map[key])[clsInd]]
         for batch in range(opt.epoch):
-            #batch_nodes = train[:80]
-            #random.shuffle(train)
-            batch_nodes,_ = sampling(train, confList, k = opt.k)
+            batch_nodes = train[:opt.k]
+            random.shuffle(train)
+            #batch_nodes,_ = sampling(train, confList, k = opt.k)
             start_time = time.time()
             optimizer.zero_grad()
             scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
@@ -279,12 +279,12 @@ if __name__ == "__main__":
         opt.lr_pre = 0.04
     elif opt.dataset  == 'ppi':
         opt.lr_pre = 0.02
-        opt.k = 400
+        opt.k = 50
         opt.num_hidden = 30
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 0.02
-        opt.k = 40
+        opt.k = 50
         opt.epoch = 1000
     if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
         loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
