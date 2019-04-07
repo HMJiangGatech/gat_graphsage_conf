@@ -234,7 +234,9 @@ def load_reddit():
     test = []
     val = []
     
-    nodes = G.nodes()
+    nodes = []
+    for k,v in id_map.items():
+        nodes.append(v)
     random.shuffle(nodes)
     rand_indices = nodes
     test = rand_indices[10000:15000]
