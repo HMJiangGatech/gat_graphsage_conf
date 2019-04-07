@@ -67,15 +67,15 @@ def run_cora(device, opt):
         end_time = time.time()
         times.append(end_time-start_time)
         loss_Data.append(loss.data)
-        '''
+        
         if batch%100 == 0:
-            out_putT = F.softmax(graphsage(test),dim = 1).data.cpu().numpy().argmax(axis=1)
-            print ("Validation ACCU:", accuracy_score(labels[test],  out_putT) )
+            out_putT = F.softmax(graphsage(test[:100]),dim = 1).data.cpu().numpy().argmax(axis=1)
+            print ("Validation ACCU:", accuracy_score(labels[test[:100]],  out_putT) )
             #print (batch, loss.data[0])
             
-            writetofile("Validation ACCU:"+str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
+            writetofile("Validation ACCU:"+str( accuracy_score(labels[test[:100]], out_putT )), opt.res_path, filetime)
         
-         '''
+         
     if len(test)>1000:
         accuT = []
         epo = len(test)/opt.k
@@ -240,12 +240,14 @@ def run_ppi(device, opt):
          '''  
     test_output =  graphsage(test)
     #summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
-    for clss in range(len(num_cls)):
+    for clsInd in range(num_cls):
         labels = np.empty((num_nodes,1), dtype=np.int64)
         for key in class_map:
-            labels[int(key)] = np.array(class_map[key])
-        print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))))
-        accu.append(accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
+            labels[int(key)] = np.array(class_map[key][clsInd])
+        test_out = test_output[:,clsInd]
+        print(test_out)
+        print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], test_out.data.cpu().numpy().argmax(axis=1))))
+        accu.append(accuracy_score(labels[test], test_out.data.cpu().numpy().argmax(axis=1)))
         loss_DataSelf = []
         ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime, multiL = clsInd)
         avgECE.append(ece)
@@ -358,7 +360,7 @@ if __name__ == "__main__":
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 0.02
         opt.k = 50
-        opt.epoch = 1000
+        opt.epoch = 10000
     if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
         loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
     else:
