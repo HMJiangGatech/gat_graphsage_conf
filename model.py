@@ -359,7 +359,7 @@ if __name__ == "__main__":
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 1e-5
         opt.k = 200
-        opt.epoch = 1000
+        opt.epoch = 3000
     if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
         loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
     else:
