@@ -47,7 +47,7 @@ def run_cora(device, opt):
     confList = torch.zeros(num_nodes) 
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     for batch in range(opt.epoch):
-        batch_nodes = train[:100]
+        batch_nodes = train[:500]
         random.shuffle(train)
         #batch_nodes,_ = sampling(train, confList, device, k = opt.k)
         start_time = time.time()
@@ -71,7 +71,7 @@ def run_cora(device, opt):
         if batch%100 == 0:
             out_putT = F.softmax(graphsage(test[:100]),dim = 1).data.cpu().numpy().argmax(axis=1)
             print ("Validation ACCU:", accuracy_score(labels[test[:100]],  out_putT) )
-            #print (batch, loss.data[0])
+            print((loss.data))
             
             writetofile("Validation ACCU:"+str( accuracy_score(labels[test[:100]], out_putT )), opt.res_path, filetime)
         
@@ -357,7 +357,7 @@ if __name__ == "__main__":
         opt.num_hidden = 100
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
-        opt.lr_pre = 0.1
+        opt.lr_pre = 0.03
         opt.k = 200
         opt.epoch = 1000
     if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
