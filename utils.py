@@ -264,7 +264,7 @@ def load_data(dataset, filetime):
         
 def sampling(train, confList , device, k = 80):
     # sampling the least confident sample to train
-    confList = confList[train].to(device)
+    confList = confList[train]
     train = np.array(train)
     _, les_conf = confList.topk(k, largest = False)
     les_conf = les_conf.data.cpu().numpy()
