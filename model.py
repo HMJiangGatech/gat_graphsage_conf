@@ -59,7 +59,7 @@ def run_cora(device, opt):
         
         loss = l_los 
         
-        loss.backward(retain_graph=True)
+        loss.backward()
         
         
         optimizer.step()
@@ -107,7 +107,8 @@ def run_cora(device, opt):
     ##rig, wrg = sepRgtWrg(F.softmax(test_output,dim = 1).data.numpy().argmax(axis=1), labels[np.array( list(test))])
     ##plotGraphStrc(train + list(test[rig])+list(test[wrg]),torch.cat( (graphsage(train).data ,test_output.data[rig], test_output.data[wrg]), dim = 0),[0]*len(train)+[1]*len(rig)+[2]*len(wrg) , adj_lists, time = filetime, name = 'after self-train model miscls' )
     return loss_Data+loss_DataSelf, scores, test_output, labels[np.array(batch_nodes)], labels[test], graphsage, test, filetime
-"""
+
+
 def run_ppi(device, opt):
 
     filetime = datetime.datetime.now()
@@ -122,7 +123,7 @@ def run_ppi(device, opt):
     features = nn.Embedding(num_nodes, num_features)
     features.weight = nn.Parameter(torch.FloatTensor(feat_data), requires_grad=False)
     features = features.to(device)
-    graphsage = SupervisedGraphSage(features,  adj_lists, num_features, num_hidden, num_cls, device).to(device)
+    graphsage = SupervisedGraphSage(features,  adj_lists, num_features, num_hidden, 2, device).to(device)
     
     xent = nn.CrossEntropyLoss()
     
@@ -135,9 +136,9 @@ def run_ppi(device, opt):
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     avgECE = []
     accu= []
-        labels = np.empty((num_nodes,1), dtype=np.int64)
-        for key in class_map:
-            labels[int(key)] = [np.array(class_map[key])[clsInd]]
+    labels = np.empty((num_nodes,1), dtype=np.int64)
+    for key in class_map:
+        labels[int(key)] = [np.array(class_map[key])[clsInd]]
         for batch in range(opt.epoch):
             batch_nodes = train[:opt.k]
             random.shuffle(train)
@@ -151,7 +152,7 @@ def run_ppi(device, opt):
             
             loss = l_los 
             
-            loss.backward(retain_graph=True)
+            loss.backward()
             
             
             optimizer.step()
@@ -183,8 +184,7 @@ def run_ppi(device, opt):
     return loss_Data+loss_DataSelf, scores, test_output, labels[np.array(batch_nodes)], labels[test], graphsage, test, filetime
 
 
-"""
-    
+
 
 def selfTrain(graphsage, labels, train, test, val, confList, adj_lists, filetime, features, temperature = 1, update_interval = 50, maxiter = 500, tol = 0.5, batch_size = 200  ): 
     opt = TrainOptions().parse()
