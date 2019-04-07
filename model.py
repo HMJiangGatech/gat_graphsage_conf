@@ -34,7 +34,7 @@ def run_cora(device, opt):
     writetofile('training sample size:'+str(len(train)), opt.res_path, filetime)
     features = nn.Embedding(num_nodes, num_features)
     features.weight = nn.Parameter(torch.FloatTensor(feat_data), requires_grad=False)
-    features = features.to(device)
+    features = features
     graphsage = SupervisedGraphSage(features,  adj_lists, num_features, num_hidden, num_cls, device).to(device)
     
     xent = nn.CrossEntropyLoss()
@@ -44,12 +44,12 @@ def run_cora(device, opt):
     #encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.8)
     times = []
     loss_Data = []
-    confList = Variable(torch.zeros(num_nodes)).to(device) 
+    confList = Variable(torch.zeros(num_nodes)) 
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     for batch in range(opt.epoch):
         #batch_nodes = train[:80]
         #random.shuffle(train)
-        batch_nodes,_ = sampling(train, confList, k = opt.k)
+        batch_nodes,_ = sampling(train, confList, device, k = opt.k)
         start_time = time.time()
         optimizer.zero_grad()
         scores = graphsage(batch_nodes, num_sample = 10, gcn = True)

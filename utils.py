@@ -262,9 +262,9 @@ def load_data(dataset, filetime):
     else:
         print('Have no' + dataset +'data')
         
-def sampling(train, confList , k = 80):
+def sampling(train, confList , device, k = 80):
     # sampling the least confident sample to train
-    confList = confList[train]
+    confList = confList[train].to_device(device)
     train = np.array(train)
     _, les_conf = confList.topk(k, largest = False)
     les_conf = les_conf.data.cpu().numpy()
