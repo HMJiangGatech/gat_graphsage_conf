@@ -40,7 +40,7 @@ def run_cora(device, opt):
     xent = nn.CrossEntropyLoss()
     
 
-    optimizer = torch.optim.Adam(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre, momentum = opt.momentum_pre)
+    optimizer = torch.optim.Adam(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre)
     #encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.8)
     times = []
     loss_Data = []
