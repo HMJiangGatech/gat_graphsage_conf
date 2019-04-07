@@ -234,7 +234,9 @@ def load_reddit():
     test = []
     val = []
     
-    rand_indices = np.random.permutation(num_nodes)
+    nodes = G.nodes()
+    random.shuffle(nodes)
+    rand_indices = nodes
     test = rand_indices[10000:15000]
     val = rand_indices[:500]
     train = list(rand_indices[15000:30000])
