@@ -236,6 +236,7 @@ def load_reddit():
     
     for edge in G.edges():
         nod = edge[0]
+        print(G.node[edge[0]])
         if G.node[edge[0]]['val'] == True:
             val.append(id_map[str(nod)])
         elif G.node[edge[0]]['test'] ==True:
