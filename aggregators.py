@@ -93,12 +93,12 @@ class MeanAggregator(nn.Module):
         #print(mask.shape,'mask')
         #print(len(nodes),'nodes')
         
-        embed_matrix = self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).to_device(self.device)
+        embed_matrix = self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).to(self.device)
         
         
         #print(attention.shape, 'attention')
-        f_1 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).to_device(self.device), self.a1)
-        f_2 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).to_device(self.device), self.a2)
+        f_1 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).to(self.device), self.a1)
+        f_2 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).to(self.device), self.a2)
         
         
         e = self.leakyrelu(f_1 + f_2.transpose(0,1))
