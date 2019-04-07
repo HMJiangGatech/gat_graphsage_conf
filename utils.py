@@ -219,8 +219,8 @@ def load_reddit():
     num_class = 0
     for key in class_map:
         labels[id_map[key]] = class_map[key]
-        if np.array(class_map[key]).argmax() > num_class:
-            num_class = np.array(class_map[key]).argmax()
+        if class_map[key] > num_class:
+            num_class = class_map[key]
 
     adj_lists = defaultdict(set)
     for edge in G.edges():
