@@ -217,8 +217,10 @@ def load_reddit():
     labels = np.empty((num_nodes,1), dtype=np.int64)
     
     num_class = 0
+    nodes = []
     for key in class_map:
         labels[id_map[key]] = class_map[key]
+        nodes.append(id_map[key])
         if class_map[key] > num_class:
             num_class = class_map[key]
 
@@ -234,15 +236,11 @@ def load_reddit():
     test = []
     val = []
     
-    nodes = []
-    for k,v in id_map.items():
-        nodes.append(v)
-    random.shuffle(nodes)
-    rand_indices = nodes
-    test = rand_indices[10000:15000]
-    val = rand_indices[:500]
-    train = list(rand_indices[15000:30000])
-    other = list(rand_indices[16400:27080])
+    rand_indices = np.random.permutation(num_nodes)
+    test = nodes[list(rand_indices[10000:15000])]
+    val = nodes[list(rand_indices[:500])]
+    train = nodes[list(rand_indices[15000:30000])]
+    other = nodes[list(rand_indices[16400:27080])]
     train, test, val = list(set(train)), list(set(test)), list(set(val))
     return feats, labels, adj_lists, num_nodes, num_feats, train, test, val, num_class+1
 
