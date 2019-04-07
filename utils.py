@@ -205,7 +205,7 @@ def load_reddit():
     num_feats = len(feats[0])
     class_map = json.load(open(prefix + "-class_map.json"))
     id_map = json.load(open(prefix + "-id_map.json"))
-    G_data = json.load(open(prefix + "-G.json"))
+    G_data = json.load(open(prefix + "-G_full.json"))
     G = json_graph.node_link_graph(G_data)
     if isinstance(G.nodes()[0], int):
         conversion = lambda n : int(n)
