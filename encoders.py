@@ -74,7 +74,7 @@ class SupervisedGraphSageMulti(nn.Module):
             
        
         #print(self.weight.mm(x_2.t()).t())
-        scores = self.weight.mm(x_2.t()).t()
+        scores = self.xent(self.weight.mm(x_2.t()).t())
         
         #print(scores.shape, 'score')
         self.scores = scores

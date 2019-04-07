@@ -75,14 +75,28 @@ def run_cora(device, opt):
             
             writetofile("Validation ACCU:"+str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
         
-         '''  
-    test_output =  graphsage(test)
-    summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
-    print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
-    writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
-    loss_DataSelf = []
-    ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
-    writetofile("ECE error:"+str(ece), opt.res_path, filetime)
+         '''
+    if len(test)>1000:
+        accuT = []
+        epo = len(test)/opt.k
+        for bat in epo:
+            node = test[bat*opt.k:(bat+1)*opt.k]
+            test_output =  graphsage(node)
+            accuT.append(accuracy_score(labels[node], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
+        #summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
+        print ("Validation ACCU:", sum(accuT)/epo )
+        writetofile("Validation ACCU:"+str( sum(accuT)/epo ), opt.res_path, filetime)
+        loss_DataSelf = []
+        ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
+        writetofile("ECE error:"+str(ece), opt.res_path, filetime)
+    else:
+        test_output =  graphsage(test)
+        summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
+        print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
+        writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
+        loss_DataSelf = []
+        ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
+        writetofile("ECE error:"+str(ece), opt.res_path, filetime)
     ##plotGraphStrc(train + list(test),torch.cat( (graphsage(train).data,test_output.data),dim = 0),  Variable(torch.LongTensor(labels[np.array(train + list(test))])).squeeze().data.numpy(), adj_lists, time = filetime, name = 'pre-train model' )
     #rig, wrg = sepRgtWrg(F.softmax(test_output,dim = 1).data.numpy().argmax(axis=1), labels[np.array( list(test))])
     ##plotGraphStrc(train + list(test[rig])+list(test[wrg]),torch.cat( (graphsage(train).data ,test_output.data[rig], test_output.data[wrg]), dim = 0), [0]*len(train)+[1]*len(rig)+[2]*len(wrg), adj_lists, time = filetime, name = 'pre-train model miscls' )
@@ -124,7 +138,7 @@ def run_ppi(device, opt):
     features = nn.Embedding(num_nodes, num_features)
     features.weight = nn.Parameter(torch.FloatTensor(feat_data), requires_grad=False)
     features = features.to(device)
-    graphsage = SupervisedGraphSageMulti(features,  adj_lists, num_features, num_hidden, 2, device).to(device)
+    graphsage = SupervisedGraphSageMulti(features,  adj_lists, num_features, num_hidden, num_cls, device).to(device)
     
     xent = nn.BCELoss()
     
@@ -137,10 +151,15 @@ def run_ppi(device, opt):
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     avgECE = []
     accu= []
-    labels = np.empty((num_nodes,1), dtype=np.int64)
+    labels = np.empty((num_nodes,num_cls), dtype=np.int64)
+    for key in class_map:
+        labels[int(key)] = np.array(class_map[key])
+    '''
     for clsInd in range(num_cls):
         for key in class_map:
             labels[int(key)] = [np.array(class_map[key])[clsInd]]
+    '''
+    '''
         for batch in range(opt.epoch):
             batch_nodes = train[:opt.k]
             random.shuffle(train)
@@ -150,8 +169,8 @@ def run_ppi(device, opt):
             scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
             conf,_ = scores.max(dim = 1)
             confList[batch_nodes] = conf #update confidence
-            print(len(scores), len(Variable(torch.LongTensor(labels[np.array(batch_nodes)]).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).squeeze()))
-            l_los = xent(scores, Variable(torch.LongTensor(labels[np.array(batch_nodes)]).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).squeeze())
+            print(scores)
+            l_los = xent(scores, Variable(torch.FloatTensor(labels[np.array(batch_nodes)]).type( torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)).squeeze())
             
             loss = l_los 
             
@@ -164,11 +183,13 @@ def run_ppi(device, opt):
             times.append(end_time-start_time)
             loss_Data.append(loss.data)
             '''
+    '''
             if batch%100 == 0:
                 out_putT = F.softmax(graphsage(test),dim = 1).data.cpu().numpy().argmax(axis=1)
                 print ("Validation ACCU of class % d: %.3f" % (clsInd, accuracy_score(labels[test],  out_putT)) )
                 #print (batch, loss.data[0])
-            '''   
+    '''
+    '''   
                 #writetofile("Validation ACCU of class " + str(clsInd) + ':' + str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
             
             
@@ -184,7 +205,46 @@ def run_ppi(device, opt):
     
     writetofile(" Avg ECE error :" +str(sum(avgECE)/ num_cls), opt.res_path, filetime)
     writetofile(" Max ECE error :" +str(max(avgECE)), opt.res_path, filetime)
-    writetofile(" Min ECE error :" +str(min(avgECE)), opt.res_path, filetime)   
+    writetofile(" Min ECE error :" +str(min(avgECE)), opt.res_path, filetime) 
+    '''
+    #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
+    for batch in range(opt.epoch):
+        #batch_nodes = train[:80]
+        #random.shuffle(train)
+        batch_nodes,_ = sampling(train, confList, device, k = opt.k)
+        start_time = time.time()
+        optimizer.zero_grad()
+        scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
+        conf,_ = scores.max(dim = 1)
+        confList[batch_nodes] = conf.cpu() #update confidence
+        l_los = xent(scores, Variable(torch.FloatTensor(labels[np.array(batch_nodes)]).type( torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)).squeeze())
+        
+        loss = l_los 
+        
+        loss.backward()
+        
+        
+        optimizer.step()
+        #encoder_scheduler.step(batch)
+        end_time = time.time()
+        times.append(end_time-start_time)
+        loss_Data.append(loss.data)
+        '''
+        if batch%100 == 0:
+            out_putT = F.softmax(graphsage(test),dim = 1).data.cpu().numpy().argmax(axis=1)
+            print ("Validation ACCU:", accuracy_score(labels[test],  out_putT) )
+            #print (batch, loss.data[0])
+            
+            writetofile("Validation ACCU:"+str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
+        
+         '''  
+    test_output =  graphsage(test)
+    summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
+    print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
+    writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
+    loss_DataSelf = []
+    ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
+    writetofile("ECE error:"+str(ece), opt.res_path, filetime)
     return loss_Data+loss_DataSelf, scores, test_output, labels[np.array(batch_nodes)], labels[test], graphsage, test, filetime
 
 
