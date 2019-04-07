@@ -7,7 +7,7 @@ import random
 from sklearn.metrics import accuracy_score
 from torch.optim.lr_scheduler import StepLR
 import torch.nn.functional as F
-from encoders import SupervisedGraphSage
+from encoders import SupervisedGraphSage, SupervisedGraphSageMulti
 import matplotlib.pyplot as plt
 from temperature_scaling import ModelWithTemperature
 from opts import TrainOptions
@@ -35,7 +35,7 @@ def run_cora(device, opt):
     features = nn.Embedding(num_nodes, num_features)
     features.weight = nn.Parameter(torch.FloatTensor(feat_data), requires_grad=False)
     features = features
-    graphsage = SupervisedGraphSage(features,  adj_lists, num_features, num_hidden, num_cls, device).to(device)
+    graphsage = SupervisedGraphSageMulti(features,  adj_lists, num_features, num_hidden, num_cls, device).to(device)
     
     xent = nn.CrossEntropyLoss()
     
@@ -67,6 +67,7 @@ def run_cora(device, opt):
         end_time = time.time()
         times.append(end_time-start_time)
         loss_Data.append(loss.data)
+        '''
         if batch%100 == 0:
             out_putT = F.softmax(graphsage(test),dim = 1).data.cpu().numpy().argmax(axis=1)
             print ("Validation ACCU:", accuracy_score(labels[test],  out_putT) )
@@ -74,7 +75,7 @@ def run_cora(device, opt):
             
             writetofile("Validation ACCU:"+str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
         
-        
+         '''  
     test_output =  graphsage(test)
     summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
     print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
