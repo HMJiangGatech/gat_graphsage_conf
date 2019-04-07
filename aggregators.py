@@ -38,6 +38,7 @@ class MeanAggregator(nn.Module):
         self.weight = nn.Parameter(
                 nn.init.xavier_normal_(torch.Tensor(embed_dim, self.feature_dim if self.gcn else 2 * self.feature_dim).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)))
         self.fc1 = nn.LeakyReLU(self.alpha)
+        '''
         #self.adaptive = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
         self.a1 = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
         self.a2 = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(feature_dim, 1).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor), gain=np.sqrt(2.0)), requires_grad=True)
@@ -45,6 +46,7 @@ class MeanAggregator(nn.Module):
         self.linear = nn.Linear(embed_dim ,self.feature_dim*2 )
         self.fc1 = nn.LeakyReLU(self.alpha)
         self.fc2 = nn.LeakyReLU(self.alpha)
+        '''
         self.device = device
 
     
@@ -94,7 +96,7 @@ class MeanAggregator(nn.Module):
         #print(len(nodes),'nodes')
         
         embed_matrix = self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).to(self.device)
-        
+        '''
         
         #print(attention.shape, 'attention')
         f_1 = torch.matmul(self.features(torch.LongTensor(unique_nodes_list).type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).to(self.device), self.a1)
@@ -113,9 +115,9 @@ class MeanAggregator(nn.Module):
         
         attention = torch.where(mask > 0, mask*e, zero_vec)
         attention = F.softmax(attention, dim=1)
+        '''
         
-        
-        to_feats = attention.mm(embed_matrix)
+        to_feats = mask.mm(embed_matrix)
         
         
         combined = self.fc1(   self.weight.mm(to_feats.t()))
