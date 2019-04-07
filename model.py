@@ -79,7 +79,7 @@ def run_cora(device, opt):
     if len(test)>1000:
         accuT = []
         epo = len(test)/opt.k
-        for bat in len(int(epo)):
+        for bat in range(int(epo)):
             node = test[bat*opt.k:(bat+1)*opt.k]
             test_output =  graphsage(node)
             accuT.append(accuracy_score(labels[node], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
@@ -240,11 +240,21 @@ def run_ppi(device, opt):
          '''  
     test_output =  graphsage(test)
     #summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
-    print ("Validation ACCU:", accuracy_score(labels[test], test_output.data.cpu().numpy().argmax(axis=1)))
-    writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  test_output.data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
-    loss_DataSelf = []
-    ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
-    writetofile("ECE error:"+str(ece), opt.res_path, filetime)
+    for clss in range(len(num_cls)):
+        labels = np.empty((num_nodes,1), dtype=np.int64)
+        for key in class_map:
+            labels[int(key)] = np.array(class_map[key])
+        print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))))
+        accu.append(accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
+        loss_DataSelf = []
+        ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime, multiL = clsInd)
+        avgECE.append(ece)
+        
+    writetofile("Avg Validation ACCU :"+ str( sum(accu)/ num_cls), opt.res_path, filetime)
+    
+    writetofile(" Avg ECE error :" +str(sum(avgECE)/ num_cls), opt.res_path, filetime)
+    writetofile(" Max ECE error :" +str(max(avgECE)), opt.res_path, filetime)
+    writetofile(" Min ECE error :" +str(min(avgECE)), opt.res_path, filetime) 
     return loss_Data+loss_DataSelf, scores, test_output, labels[np.array(batch_nodes)], labels[test], graphsage, test, filetime
 
 
