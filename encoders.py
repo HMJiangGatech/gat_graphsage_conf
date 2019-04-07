@@ -49,7 +49,7 @@ class SupervisedGraphSage(nn.Module):
 class SupervisedGraphSageMulti(nn.Module):
 
     def __init__(self, features, adj_lists, feature_dim, embed_dim, num_classes, device, num_nodes = 2708, alpha = 0.2):
-        super(SupervisedGraphSage, self).__init__()
+        super(SupervisedGraphSageMulti, self).__init__()
         
         self.embed_dim = embed_dim
         self.device = device
@@ -80,7 +80,7 @@ class SupervisedGraphSageMulti(nn.Module):
 class GraphMultiPred(nn.Module):
 
     def __init__(self, features, adj_lists, feature_dim, embed_dim, num_classes, device, num_nodes = 2708, alpha = 0.2):
-        super(SupervisedGraphSage, self).__init__()
+        super(GraphMultiPred, self).__init__()
         
         self.embed_dim = embed_dim
         self.device = device
