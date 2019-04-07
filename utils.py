@@ -205,7 +205,7 @@ def load_reddit():
     num_feats = len(feats[0])
     class_map = json.load(open(prefix + "-class_map.json"))
     id_map = json.load(open(prefix + "-id_map.json"))
-    G_data = json.load(open(prefix + "-G_full.json"))
+    G_data = json.load(open(prefix + "-G.json"))
     G = json_graph.node_link_graph(G_data)
     if isinstance(G.nodes()[0], int):
         conversion = lambda n : int(n)
@@ -237,7 +237,7 @@ def load_reddit():
     rand_indices = np.random.permutation(num_nodes)
     test = rand_indices[10000:15000]
     val = rand_indices[:500]
-    train = list(rand_indices[15000:16400])
+    train = list(rand_indices[15000:55000])
     other = list(rand_indices[16400:27080])
     train, test, val = list(set(train)), list(set(test)), list(set(val))
     return feats, labels, adj_lists, num_nodes, num_feats, train, test, val, num_class+1
