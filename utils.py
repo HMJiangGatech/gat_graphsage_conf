@@ -234,15 +234,11 @@ def load_reddit():
     test = []
     val = []
     
-    for edge in G.edges():
-        nod = edge[0]
-        print(G.node[edge[0]])
-        if G.node[edge[0]]['val'] == True:
-            val.append(id_map[str(nod)])
-        elif G.node[edge[0]]['test'] ==True:
-            test.append(id_map[str(nod)])
-        else:
-            train.append(id_map[str(nod)])
+    rand_indices = np.random.permutation(num_nodes)
+    test = rand_indices[10000:15000]
+    val = rand_indices[:10000]
+    train = list(rand_indices[15000:16400])
+    other = list(rand_indices[16400:27080])
     train, test, val = list(set(train)), list(set(test)), list(set(val))
     return feats, labels, adj_lists, num_nodes, num_feats, train, test, val, num_class+1
 
