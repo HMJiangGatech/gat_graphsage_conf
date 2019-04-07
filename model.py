@@ -53,6 +53,7 @@ def run_cora(device, opt):
         start_time = time.time()
         optimizer.zero_grad()
         scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
+        print(scores)
         conf,_ = scores.max(dim = 1)
         confList[batch_nodes] = conf.cpu() #update confidence
         l_los = xent(scores, Variable(torch.LongTensor(labels[np.array(batch_nodes)]).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor)).squeeze())
