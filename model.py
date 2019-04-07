@@ -44,7 +44,7 @@ def run_cora(device, opt):
     #encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.8)
     times = []
     loss_Data = []
-    confList = Variable(torch.zeros(num_nodes)) 
+    confList = torch.zeros(num_nodes) 
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     for batch in range(opt.epoch):
         #batch_nodes = train[:80]
