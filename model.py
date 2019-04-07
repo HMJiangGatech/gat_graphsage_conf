@@ -47,9 +47,9 @@ def run_cora(device, opt):
     confList = torch.zeros(num_nodes) 
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     for batch in range(opt.epoch):
-        #batch_nodes = train[:80]
-        #random.shuffle(train)
-        batch_nodes,_ = sampling(train, confList, device, k = opt.k)
+        batch_nodes = train[:100]
+        random.shuffle(train)
+        #batch_nodes,_ = sampling(train, confList, device, k = opt.k)
         start_time = time.time()
         optimizer.zero_grad()
         scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
@@ -87,7 +87,7 @@ def run_cora(device, opt):
         print ("Validation ACCU:", sum(accuT)/epo )
         writetofile("Validation ACCU:"+str( sum(accuT)/epo ), opt.res_path, filetime)
         loss_DataSelf = []
-        ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
+        ece = plotDiagram(opt.dataset, val, graphsage, labels[np.array(val)], 10, filetime)
         writetofile("ECE error:"+str(ece), opt.res_path, filetime)
     else:
         test_output =  graphsage(test)
@@ -95,7 +95,7 @@ def run_cora(device, opt):
         print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
         writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
         loss_DataSelf = []
-        ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
+        ece = plotDiagram(opt.dataset, val, graphsage, labels[np.array(val)], 10, filetime)
         writetofile("ECE error:"+str(ece), opt.res_path, filetime)
     ##plotGraphStrc(train + list(test),torch.cat( (graphsage(train).data,test_output.data),dim = 0),  Variable(torch.LongTensor(labels[np.array(train + list(test))])).squeeze().data.numpy(), adj_lists, time = filetime, name = 'pre-train model' )
     #rig, wrg = sepRgtWrg(F.softmax(test_output,dim = 1).data.numpy().argmax(axis=1), labels[np.array( list(test))])
@@ -209,9 +209,9 @@ def run_ppi(device, opt):
     '''
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     for batch in range(opt.epoch):
-        #batch_nodes = train[:80]
-        #random.shuffle(train)
-        batch_nodes,_ = sampling(train, confList, device, k = opt.k)
+        batch_nodes = train[:opt.k]
+        random.shuffle(train)
+        #batch_nodes,_ = sampling(train, confList, device, k = opt.k)
         start_time = time.time()
         optimizer.zero_grad()
         scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
@@ -244,12 +244,11 @@ def run_ppi(device, opt):
         labels = np.empty((num_nodes,1), dtype=np.int64)
         for key in class_map:
             labels[int(key)] = np.array(class_map[key][clsInd])
-        test_out = test_output[:,clsInd]
-        print(test_out)
-        print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], test_out.data.cpu().numpy())))
-        accu.append(accuracy_score(labels[test], test_out.data.cpu().numpy().argmax(axis=1)))
+        test_out = [1 if i>0.5 else 0 for i in test_output[:,clsInd]]
+        print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], test_out)))
+        accu.append(accuracy_score(labels[test], test_out))
         loss_DataSelf = []
-        ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime, multiL = clsInd)
+        ece = plotDiagram(opt.dataset, val, graphsage, labels[np.array(val)], 10, filetime, multiL = clsInd)
         avgECE.append(ece)
         
     writetofile("Avg Validation ACCU :"+ str( sum(accu)/ num_cls), opt.res_path, filetime)
@@ -354,13 +353,13 @@ if __name__ == "__main__":
         opt.lr_pre = 0.04
     elif opt.dataset  == 'ppi':
         opt.lr_pre = 0.01
-        opt.k = 50
-        opt.num_hidden = 30
+        opt.k = 100
+        opt.num_hidden = 100
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
-        opt.lr_pre = 0.02
-        opt.k = 50
-        opt.epoch = 10000
+        opt.lr_pre = 0.1
+        opt.k = 200
+        opt.epoch = 1000
     if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
         loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846
     else:

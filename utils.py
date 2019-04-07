@@ -455,9 +455,9 @@ def target_distribution(batch: torch.Tensor) -> torch.Tensor:
 
 
 
-def plotDiagram(dataset, model, labels, nBins, time, multiL = 0):
+def plotDiagram(dataset, data, model, labels, nBins, time, multiL = 0):
     ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
-    logits = model(dataset)
+    logits = model(data)
     ece_criterion = _ECELoss()
     before_temperature_ece = ece_criterion(logits, labels).item()
     outputs  = F.softmax(logits, dim = 1).data

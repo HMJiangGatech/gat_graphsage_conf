@@ -28,7 +28,7 @@ class SupervisedGraphSage(nn.Module):
         self.weight = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(num_classes, self.embed_dim).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)))
         #init.xavier_uniform(self.weight)
     def forward(self,  nodes, num_sample = 10, gcn = True, multi = True):
-        x_2 = self.layer_2(lambda nodes: self.layer_1(self.features, nodes, self.adj_lists, num_sample=5, gcn = True), nodes, self.adj_lists, num_sample=10, gcn = True) 
+        x_2 = self.layer_2(lambda nodes: self.layer_1(self.features, nodes, self.adj_lists, num_sample=10, gcn = True), nodes, self.adj_lists, num_sample=25, gcn = True) 
         '''
         else:
             mask1, unique_nodes_list1, unique_nodes1 = samL1
@@ -64,7 +64,7 @@ class SupervisedGraphSageMulti(nn.Module):
         self.weight = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(num_classes, self.embed_dim).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)))
         #init.xavier_uniform(self.weight)
     def forward(self,  nodes, num_sample = 10, gcn = True, multi = True):
-        x_2 = self.layer_2(lambda nodes: self.layer_1(self.features, nodes, self.adj_lists, num_sample=5, gcn = True), nodes, self.adj_lists, num_sample=10, gcn = True) 
+        x_2 = self.layer_2(lambda nodes: self.layer_1(self.features, nodes, self.adj_lists, num_sample=10, gcn = True), nodes, self.adj_lists, num_sample=25, gcn = True) 
         '''
         else:
             mask1, unique_nodes_list1, unique_nodes1 = samL1
