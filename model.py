@@ -135,7 +135,6 @@ def run_ppi(device, opt):
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     avgECE = []
     accu= []
-    for clsInd in range(num_cls):
         labels = np.empty((num_nodes,1), dtype=np.int64)
         for key in class_map:
             labels[int(key)] = [np.array(class_map[key])[clsInd]]
@@ -278,7 +277,7 @@ if __name__ == "__main__":
         opt.k = 50
         opt.lr_pre = 0.04
     elif opt.dataset  == 'ppi':
-        opt.lr_pre = 0.02
+        opt.lr_pre = 0.01
         opt.k = 50
         opt.num_hidden = 30
         opt.epoch = 1000
