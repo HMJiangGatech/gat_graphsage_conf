@@ -195,7 +195,7 @@ def load_ppi():
         else:
             train.append(node_map[str(nod)])
     train, test, val = list(set(train)), list(set(test)), list(set(val))
-    return feats, class_map, adj_lists, num_nodes, num_feats, train, test, val, num_class+1
+    return feats, class_map, adj_lists, num_nodes, num_feats, train, test, val, num_class
 
 def load_reddit():
     prefix = "example_data/reddit"

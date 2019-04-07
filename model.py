@@ -79,7 +79,7 @@ def run_cora(device, opt):
     if len(test)>1000:
         accuT = []
         epo = len(test)/opt.k
-        for bat in epo:
+        for bat in len(int(epo)):
             node = test[bat*opt.k:(bat+1)*opt.k]
             test_output =  graphsage(node)
             accuT.append(accuracy_score(labels[node], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
@@ -239,9 +239,9 @@ def run_ppi(device, opt):
         
          '''  
     test_output =  graphsage(test)
-    summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
-    print ("Validation ACCU:", accuracy_score(labels[test], F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1)))
-    writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  F.softmax(test_output,dim = 1).data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
+    #summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
+    print ("Validation ACCU:", accuracy_score(labels[test], test_output.data.cpu().numpy().argmax(axis=1)))
+    writetofile("Validation ACCU:"+str( accuracy_score(labels[test],  test_output.data.cpu().numpy().argmax(axis=1))), opt.res_path, filetime)
     loss_DataSelf = []
     ece = plotDiagram(val, graphsage, labels[np.array(val)], 10, filetime)
     writetofile("ECE error:"+str(ece), opt.res_path, filetime)
