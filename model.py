@@ -40,7 +40,7 @@ def run_cora(device, opt):
     xent = nn.CrossEntropyLoss()
     
 
-    optimizer = torch.optim.SGD(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre, momentum = opt.momentum_pre)
+    optimizer = torch.optim.Adam(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre, momentum = opt.momentum_pre)
     #encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.8)
     times = []
     loss_Data = []
@@ -357,7 +357,7 @@ if __name__ == "__main__":
         opt.num_hidden = 100
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
-        opt.lr_pre = 0.03
+        opt.lr_pre = 1e-5
         opt.k = 200
         opt.epoch = 1000
     if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
