@@ -357,7 +357,7 @@ if __name__ == "__main__":
         opt.num_hidden = 100
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
-        opt.lr_pre = 1e-5
+        opt.lr_pre = 1e-4
         opt.k = 200
         opt.epoch = 3000
     if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
