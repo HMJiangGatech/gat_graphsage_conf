@@ -7,7 +7,7 @@ import random
 from sklearn.metrics import accuracy_score
 from torch.optim.lr_scheduler import StepLR
 import torch.nn.functional as F
-from encoders import SupervisedGraphSage
+from encoders import SupervisedGraphSage, SupervisedGraphSageMulti
 import matplotlib.pyplot as plt
 from temperature_scaling import ModelWithTemperature
 from opts import TrainOptions
@@ -124,7 +124,7 @@ def run_ppi(device, opt):
     features = nn.Embedding(num_nodes, num_features)
     features.weight = nn.Parameter(torch.FloatTensor(feat_data), requires_grad=False)
     features = features.to(device)
-    graphsage = SupervisedGraphSage(features,  adj_lists, num_features, num_hidden, 2, device).to(device)
+    graphsage = SupervisedGraphSageMulti(features,  adj_lists, num_features, num_hidden, 2, device).to(device)
     
     xent = nn.BCELoss()
     
@@ -141,7 +141,6 @@ def run_ppi(device, opt):
     for clsInd in range(num_cls):
         for key in class_map:
             labels[int(key)] = [np.array(class_map[key])[clsInd]]
-        print(labels)
         for batch in range(opt.epoch):
             batch_nodes = train[:opt.k]
             random.shuffle(train)

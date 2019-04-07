@@ -50,7 +50,6 @@ class SupervisedGraphSageMulti(nn.Module):
 
     def __init__(self, features, adj_lists, feature_dim, embed_dim, num_classes, device, num_nodes = 2708, alpha = 0.2):
         super(SupervisedGraphSageMulti, self).__init__()
-        
         self.embed_dim = embed_dim
         self.device = device
         self.layer_1 = MeanAggregator(feature_dim, self.device, alpha = alpha, embed_dim = embed_dim) 
@@ -58,13 +57,13 @@ class SupervisedGraphSageMulti(nn.Module):
         self.adj_lists = adj_lists
         self.features = features
         
-        self.xent = nn.Softmax(dim=1)
+        self.xent = nn.Sigmoid()
         
         
 
         self.weight = nn.Parameter(nn.init.xavier_normal_(torch.Tensor(num_classes, self.embed_dim).type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)))
         #init.xavier_uniform(self.weight)
-    def forward(self,  nodes, num_sample = 10, gcn = True):
+    def forward(self,  nodes, num_sample = 10, gcn = True, multi = True):
         x_2 = self.layer_2(lambda nodes: self.layer_1(self.features, nodes, self.adj_lists, num_sample=5, gcn = True), nodes, self.adj_lists, num_sample=10, gcn = True) 
         '''
         else:
@@ -75,7 +74,12 @@ class SupervisedGraphSageMulti(nn.Module):
             
        
         #print(self.weight.mm(x_2.t()).t())
-        return x_2
+        scores = self.weight.mm(x_2.t()).t()
+        
+        #print(scores.shape, 'score')
+        self.scores = scores
+        
+        return scores
     
 class GraphMultiPred(nn.Module):
 
