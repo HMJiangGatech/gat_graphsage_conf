@@ -507,7 +507,7 @@ def plotDiagram(dataset, data, model, labels, nBins, time, multiL = 0):
     f1.savefig("result/"+dataset+"/Diagram of confidence" + time.strftime(ISOTIMEFORMAT)+ str(multiL)+".png", format="PNG")
     return before_temperature_ece
 
-def plotDiagramM(dataset, data, model, labels, nBins, nClass, time, multiL = 0):
+def plotDiagramM(dataset, data, model, labels, nBins, clss, time, multiL = 0):
     ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
     logits = model(data)
     ece_criterion = _ECELossM()
