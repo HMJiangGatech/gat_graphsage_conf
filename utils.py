@@ -609,7 +609,8 @@ class _ECELoss(nn.Module):
 
         return ece
     
-class _ECELossM(nn.Module, class):
+class _ECELossM(nn.Module):
+    
     """
     Calculates the Expected Calibration Error of a model.
     (This isn't necessary for temperature scaling, just a cool metric).
