@@ -476,18 +476,16 @@ def plotDiagram(dataset, data, model, labels, nBins, time, multiL = 0):
     accu = [0]*nBins
     for i in range(len(Sconf)):
         if (Sconf[i] >=  bins/nBins) and (Sconf[i]< (bins+1)/nBins):
+            bins = min(bins,9)
             cnt[bins] += 1
             conf[bins] += Sconf[i]
             accu[bins] += 1 if Spred[i] == Slabels[i] else 0
         elif Sconf[i] >= (bins+1)/nBins:
             bins = int(np.floor(Sconf[i]*10))
-            if bins<=9:
-                
-                cnt[bins] += 1
-                conf[bins] += Sconf[i]
-                accu[bins] += 1 if Spred[i] == Slabels[i] else 0
-            else:
-                print(bins,Sconf[i] )
+            bins = min(bins,9)
+            cnt[bins] += 1
+            conf[bins] += Sconf[i]
+            accu[bins] += 1 if Spred[i] == Slabels[i] else 0
         else:
             print('bins larger than confidence: outs = %.2f bins = %.2f' % (Sconf[i], bins))
     conf = [ np.array(conf)[i] / np.array(cnt)[i] if np.array(cnt)[i]>0 else 0 for i in range(nBins)]
