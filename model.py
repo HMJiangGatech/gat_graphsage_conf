@@ -47,7 +47,7 @@ def run_cora(device, opt):
     confList = torch.zeros(num_nodes) 
     #optimizer_1 = torch.optim.SGD(graphsage.w, lr=0.5
     for batch in range(opt.epoch):
-        batch_nodes = train[:500]
+        batch_nodes = train[:opt.k]
         random.shuffle(train)
         #batch_nodes,_ = sampling(train, confList, device, k = opt.k)
         start_time = time.time()
@@ -142,7 +142,7 @@ def run_ppi(device, opt):
     graphsage = SupervisedGraphSageMulti(features,  adj_lists, num_features, num_hidden, num_cls, device).to(device)
     
     xent = nn.BCELoss()
-    
+    Act = nn.Sigmoid()
 
     optimizer = torch.optim.SGD(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre, momentum = opt.momentum_pre)
     #encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.8)
@@ -215,7 +215,7 @@ def run_ppi(device, opt):
         #batch_nodes,_ = sampling(train, confList, device, k = opt.k)
         start_time = time.time()
         optimizer.zero_grad()
-        scores = graphsage(batch_nodes, num_sample = 10, gcn = True)
+        scores = Act(graphsage(batch_nodes, num_sample = 10, gcn = True))
         conf,_ = scores.max(dim = 1)
         confList[batch_nodes] = conf.cpu() #update confidence
         l_los = xent(scores, Variable(torch.FloatTensor(labels[np.array(batch_nodes)]).type( torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)).squeeze())
@@ -239,7 +239,7 @@ def run_ppi(device, opt):
             writetofile("Validation ACCU:"+str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
         
          '''  
-    test_output =  graphsage(test)
+    test_output =  Act(graphsage(test))
     #summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
     for clsInd in range(num_cls):
         labels = np.empty((num_nodes,1), dtype=np.int64)
@@ -249,7 +249,7 @@ def run_ppi(device, opt):
         print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], test_out)))
         accu.append(accuracy_score(labels[test], test_out))
         loss_DataSelf = []
-        ece = plotDiagram(opt.dataset, val, graphsage, labels[np.array(val)], 10, filetime, multiL = clsInd)
+        ece = plotDiagramM(opt.dataset, val, graphsage, labels[np.array(val)], 10,  num_cls, filetime, multiL = clsInd)
         avgECE.append(ece)
         
     writetofile("Avg Validation ACCU :"+ str( sum(accu)/ num_cls), opt.res_path, filetime)
@@ -359,7 +359,7 @@ if __name__ == "__main__":
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 5e-4
-        opt.k = 200
+        opt.k = 500
         opt.epoch = 3000
     if   opt.dataset in ['cora','pubmed', 'reddit' ]:      
         loss_Data, scores, val_output, labels_train, labels_val, graphsage, test, filetime = run_cora(device, opt) #0.862 time 0.0506  #0.888 - 0.894 avg time 0.74 # 0.846

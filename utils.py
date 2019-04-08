@@ -506,6 +506,58 @@ def plotDiagram(dataset, data, model, labels, nBins, time, multiL = 0):
     plt.title('Reliability Diagram')
     f1.savefig("result/"+dataset+"/Diagram of confidence" + time.strftime(ISOTIMEFORMAT)+ str(multiL)+".png", format="PNG")
     return before_temperature_ece
+
+def plotDiagramM(dataset, data, model, labels, nBins, nClass, time, multiL = 0):
+    ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
+    logits = model(data)
+    ece_criterion = _ECELossM()
+    
+    xent = nn.Sigmoid()
+    before_temperature_ece = ece_criterion(logits, labels).item()
+    outputs  = xent(logits, dim = 1).data
+    pred = torch.tensor([1 if item>0.5 else 0 for item in outputs])
+    pred = pred.cpu().numpy()
+    confidence = outputs.cpu().numpy()
+    Slabels = [l[0] for _,l in sorted(zip(confidence,labels))]
+    Spred = [l for _,l in sorted(zip(confidence,pred))]
+    
+    Sconf = sorted(confidence)
+    bins = 0
+    cnt = [0]*nBins
+    conf = [0]*nBins
+    accu = [0]*nBins
+    for i in range(len(Sconf)):
+        if (Sconf[i] >=  bins/nBins) and (Sconf[i]< (bins+1)/nBins):
+            cnt[bins] += 1
+            conf[bins] += Sconf[i]
+            accu[bins] += 1 if Spred[i] == Slabels[i] else 0
+        elif Sconf[i] >= (bins+1)/nBins:
+            bins = int(np.floor(Sconf[i]*10))
+            cnt[bins] += 1
+            conf[bins] += Sconf[i]
+            accu[bins] += 1 if Spred[i] == Slabels[i] else 0
+        else:
+            print('bins larger than confidence: outs = %.2f bins = %.2f' % (Sconf[i], bins))
+    conf = [ np.array(conf)[i] / np.array(cnt)[i] if np.array(cnt)[i]>0 else 0 for i in range(nBins)]
+    accu = [ np.array(accu)[i] / np.array(cnt)[i] if np.array(cnt)[i]>0 else 0 for i in range(nBins)]
+    print(bins)
+    f1 = plt.figure(1)
+    plt.subplot(211)
+    plt.hist(Sconf, bins=nBins, color = 'blue', alpha = 0.5)
+    plt.xlabel('Confidence')
+    plt.ylabel('# samples')
+    plt.title('Conf Histogram')
+    #plt.ylim(0,1)
+    plt.subplot(212)
+    print(cnt, accu,conf)
+    plt.bar([i/nBins for i in range(nBins)],accu, width = 1/nBins, color = 'blue', alpha = 0.25)
+    plt.bar([i/nBins for i in range(nBins)],conf, width = 1/nBins, color = 'red', alpha = 0.25)
+    plt.xlim(0,1)
+    plt.ylabel('Confidence')
+    plt.xlabel('Accuracy')
+    plt.title('Reliability Diagram')
+    f1.savefig("result/"+dataset+"/Diagram of confidence" + time.strftime(ISOTIMEFORMAT)+ str(multiL)+".png", format="PNG")
+    return before_temperature_ece
     
 
 
@@ -541,6 +593,49 @@ class _ECELoss(nn.Module):
     def forward(self, logits, labels):
         softmaxes = F.softmax(logits, dim=1)
         confidences, predictions = torch.max(softmaxes, 1)
+        labels = Variable(torch.LongTensor(labels).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor )).squeeze().data
+        
+        accuracies = predictions.eq(labels)
+
+        ece = torch.zeros(1, device=logits.device)
+        for bin_lower, bin_upper in zip(self.bin_lowers, self.bin_uppers):
+            # Calculated |confidence - accuracy| in each bin
+            in_bin = confidences.gt(bin_lower.item()) * confidences.le(bin_upper.item())
+            prop_in_bin = in_bin.float().mean()
+            if prop_in_bin.item() > 0:
+                accuracy_in_bin = accuracies[in_bin].float().mean()
+                avg_confidence_in_bin = confidences[in_bin].mean()
+                ece += torch.abs(avg_confidence_in_bin - accuracy_in_bin) * prop_in_bin
+
+        return ece
+    
+class _ECELossM(nn.Module):
+    """
+    Calculates the Expected Calibration Error of a model.
+    (This isn't necessary for temperature scaling, just a cool metric).
+    The input to this loss is the logits of a model, NOT the softmax scores.
+    This divides the confidence outputs into equally-sized interval bins.
+    In each bin, we compute the confidence gap:
+    bin_gap = | avg_confidence_in_bin - accuracy_in_bin |
+    We then return a weighted average of the gaps, based on the number
+    of samples in each bin
+    See: Naeini, Mahdi Pakdaman, Gregory F. Cooper, and Milos Hauskrecht.
+    "Obtaining Well Calibrated Probabilities Using Bayesian Binning." AAAI.
+    2015.
+    """
+    def __init__(self, n_bins=15):
+        """
+        n_bins (int): number of confidence interval bins
+        """
+        super(_ECELossM, self).__init__()
+        bin_boundaries = torch.linspace(0, 1, n_bins + 1)
+        self.bin_lowers = bin_boundaries[:-1]
+        self.bin_uppers = bin_boundaries[1:]
+        self.xent = nn.Sigmoid()
+    def forward(self, logits, labels):
+        softmaxes = xent(logits)
+        confidences = softmaxes
+        predictions = torch.tensor([1 if item>0.5 else 0 for item in softmaxes])
         labels = Variable(torch.LongTensor(labels).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor )).squeeze().data
         
         accuracies = predictions.eq(labels)
