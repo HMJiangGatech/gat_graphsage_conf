@@ -217,7 +217,7 @@ def run_ppi(device, opt):
         optimizer.zero_grad()
         scores = Act(graphsage(batch_nodes, num_sample = 10, gcn = True))
         conf,_ = scores.max(dim = 1)
-        confList[batch_nodes] = conf.cpu() #update confidence
+        confList[batch_nodes] = conf.to(device) #update confidence
         l_los = xent(scores, Variable(torch.FloatTensor(labels[np.array(batch_nodes)]).type( torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor)).squeeze())
         
         loss = l_los 
