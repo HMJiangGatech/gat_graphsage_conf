@@ -509,14 +509,14 @@ def plotDiagram(dataset, data, model, labels, nBins, time, multiL = 0):
     f1.savefig("result/"+dataset+"/Diagram of confidence" + time.strftime(ISOTIMEFORMAT)+ str(multiL)+".png", format="PNG")
     return before_temperature_ece
 
-def plotDiagramM(dataset, data, model, labels, nBins, clss, time, multiL = 0):
+def plotDiagramM(dataset, data, model, labels, nBins,  time, multiL = 0):
     ISOTIMEFORMAT = '%Y-%m-%d %H:%M'
     logits = model(data)
     ece_criterion = _ECELossM()
     
     xent = nn.Sigmoid()
-    before_temperature_ece = ece_criterion(logits, labels, clss).item()
-    outputs  = xent(logits, dim = 1).data
+    before_temperature_ece = ece_criterion(logits, labels, multiL).item()
+    outputs  = xent(logits).data[:,multiL]
     pred = torch.tensor([1 if item>0.5 else 0 for item in outputs])
     pred = pred.cpu().numpy()
     confidence = outputs.cpu().numpy()

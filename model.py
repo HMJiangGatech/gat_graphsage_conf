@@ -249,7 +249,7 @@ def run_ppi(device, opt):
         print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], test_out)))
         accu.append(accuracy_score(labels[test], test_out))
         loss_DataSelf = []
-        ece = plotDiagramM(opt.dataset, val, graphsage, labels[np.array(val)], 10,  num_cls, filetime, multiL = clsInd)
+        ece = plotDiagramM(opt.dataset, val, graphsage, labels[np.array(val)], 10,  filetime, multiL = clsInd)
         avgECE.append(ece)
         
     writetofile("Avg Validation ACCU :"+ str( sum(accu)/ num_cls), opt.res_path, filetime)
@@ -351,11 +351,11 @@ if __name__ == "__main__":
         opt.k = 80
     elif opt.dataset  =='pubmed':
         opt.k = 50
-        opt.lr_pre = 0.04
+        opt.lr_pre = 5e-4
     elif opt.dataset  == 'ppi':
-        opt.lr_pre = 0.01
+        opt.lr_pre = 5e-4
         opt.k = 100
-        opt.num_hidden = 100
+        opt.num_hidden = 150
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 5e-4
