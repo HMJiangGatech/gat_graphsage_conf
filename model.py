@@ -356,7 +356,7 @@ if __name__ == "__main__":
         opt.lr_pre = 5e-4
         opt.k = 100
         opt.num_hidden = 150
-        opt.epoch = 1
+        opt.epoch = 1000
     elif opt.dataset  == 'reddit':
         opt.lr_pre = 5e-4
         opt.k = 500
