@@ -71,7 +71,7 @@ def run_cora(device, opt):
         if batch%100 == 0:
             out_putT = F.softmax(graphsage(test[:100]),dim = 1).data.cpu().numpy().argmax(axis=1)
             print ("Validation ACCU:", accuracy_score(labels[test[:100]],  out_putT) )
-            print ("Validation ACCU:", accuracy_score(labels[batch_nodes], scores) )
+            print ("Validation ACCU:", accuracy_score(labels[batch_nodes],  F.softmax(scores, dim = 1).data.cpu().numpy().argmax(axis=1)) )
             print((loss.data))
             
             writetofile("Validation ACCU:"+str( accuracy_score(labels[test[:100]], out_putT )), opt.res_path, filetime)
