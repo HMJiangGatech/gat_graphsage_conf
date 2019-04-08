@@ -633,7 +633,7 @@ class _ECELossM(nn.Module):
         self.bin_uppers = bin_boundaries[1:]
         self.xent = nn.Sigmoid()
     def forward(self, logits, labels):
-        softmaxes = xent(logits)
+        softmaxes = self.xent(logits)
         confidences = softmaxes
         predictions = torch.tensor([1 if item>0.5 else 0 for item in softmaxes])
         labels = Variable(torch.LongTensor(labels).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor )).squeeze().data
