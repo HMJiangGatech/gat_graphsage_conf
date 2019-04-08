@@ -198,7 +198,8 @@ def load_ppi():
     return feats, class_map, adj_lists, num_nodes, num_feats, train, test, val, num_class
 
 def load_reddit():
-    prefix = "/Users/ififsun/AnacondaProjects/Code/graphsage-simple-master/gat_graphsage_conf 2/example_data/reddit"#"example_data/reddit"
+    #prefix = "/Users/ififsun/AnacondaProjects/Code/graphsage-simple-master/gat_graphsage_conf 2/example_data/reddit"#
+    prefix = "example_data/reddit"
 
     feats = np.load(prefix + "-feats.npy")
     num_nodes = len(feats)
