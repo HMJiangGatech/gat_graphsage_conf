@@ -513,7 +513,7 @@ def plotDiagramM(dataset, data, model, labels, nBins, nClass, time, multiL = 0):
     ece_criterion = _ECELossM()
     
     xent = nn.Sigmoid()
-    before_temperature_ece = ece_criterion(logits, labels).item()
+    before_temperature_ece = ece_criterion(logits, labels, clss).item()
     outputs  = xent(logits, dim = 1).data
     pred = torch.tensor([1 if item>0.5 else 0 for item in outputs])
     pred = pred.cpu().numpy()
@@ -609,7 +609,7 @@ class _ECELoss(nn.Module):
 
         return ece
     
-class _ECELossM(nn.Module):
+class _ECELossM(nn.Module, class):
     """
     Calculates the Expected Calibration Error of a model.
     (This isn't necessary for temperature scaling, just a cool metric).
@@ -632,10 +632,10 @@ class _ECELossM(nn.Module):
         self.bin_lowers = bin_boundaries[:-1]
         self.bin_uppers = bin_boundaries[1:]
         self.xent = nn.Sigmoid()
-    def forward(self, logits, labels):
-        softmaxes = self.xent(logits)
+    def forward(self, logits, labels, clss):
+        softmaxes = self.xent(logits).data[:,clss]
         confidences = softmaxes
-        predictions = torch.tensor([1 if item>0.5 else 0 for item in softmaxes.data.cpu().numpy()])
+        predictions = torch.tensor([1 if item>0.5 else 0 for item in softmaxes.cpu().numpy()])
         labels = Variable(torch.LongTensor(labels).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor )).squeeze().data
         
         accuracies = predictions.eq(labels)
