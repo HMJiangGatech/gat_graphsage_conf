@@ -198,8 +198,8 @@ def load_ppi():
     return feats, class_map, adj_lists, num_nodes, num_feats, train, test, val, num_class
 
 def load_reddit():
-    #prefix = "/Users/ififsun/AnacondaProjects/Code/graphsage-simple-master/gat_graphsage_conf 2/example_data/reddit"#
-    prefix = "example_data/reddit"
+    prefix = "/Users/ififsun/AnacondaProjects/Code/graphsage-simple-master/gat_graphsage_conf 2/example_data/reddit"#
+    #prefix = "example_data/reddit"
 
     feats = np.load(prefix + "-feats.npy")
     num_nodes = len(feats)
@@ -239,7 +239,7 @@ def load_reddit():
     rand_indices = np.random.permutation(num_nodes)
     test = rand_indices[10000:15000]
     val = rand_indices[:500]
-    train = list(rand_indices[15000:30000])
+    train = list(rand_indices[15000:80000])
     other = list(rand_indices[16400:27080])
     train, test, val = list(set(train)), list(set(test)), list(set(val))
     return feats, labels, adj_lists, num_nodes, num_feats, train, test, val, num_class+1
@@ -635,7 +635,7 @@ class _ECELossM(nn.Module):
     def forward(self, logits, labels):
         softmaxes = self.xent(logits)
         confidences = softmaxes
-        predictions = torch.tensor([1 if item>0.5 else 0 for item in softmaxes])
+        predictions = torch.tensor([1 if item>0.5 else 0 for item in softmaxes.data.cpu().numpy])
         labels = Variable(torch.LongTensor(labels).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor )).squeeze().data
         
         accuracies = predictions.eq(labels)
