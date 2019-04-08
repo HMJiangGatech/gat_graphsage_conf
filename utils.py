@@ -638,7 +638,7 @@ class _ECELossM(nn.Module):
     def forward(self, logits, labels, clss):
         softmaxes = self.xent(logits).data[:,clss]
         confidences = softmaxes
-        predictions = torch.tensor([1 if item>0.5 else 0 for item in softmaxes.cpu().numpy()])
+        predictions = torch.tensor([1 if item>0.5 else 0 for item in softmaxes.cpu().numpy()]).type( torch.cuda.Tensor if torch.cuda.is_available() else torch.Tensor )
         labels = Variable(torch.LongTensor(labels).type( torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor )).squeeze().data
         
         accuracies = predictions.eq(labels)
