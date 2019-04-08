@@ -35,7 +35,7 @@ class TrainOptions(BaseOptions):
     # Override
     def initialize(self):
         BaseOptions.initialize(self)
-        self.parser.add_argument('--epoch',type=int, default= 1,help = 'number of epoch')
+        self.parser.add_argument('--epoch',type=int, default= 150,help = 'number of epoch')
         self.parser.add_argument('--k',type=int, default= 80,help = 'select the least k sample to train during the pre-train')
         self.parser.add_argument('--lr_pre',type=int, default= 0.03,help = 'learning rate in pre-train')
         self.parser.add_argument('--momentum_pre',type=int, default= 0.9,help = 'momentum in pre-train')
