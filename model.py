@@ -13,7 +13,7 @@ from temperature_scaling import ModelWithTemperature
 from opts import TrainOptions
 from utils import *
 from plotModel import plotGraphStrc
-from actL import activeUnsL , activeUnL
+#from actL import activeUnsL , activeUnL
 """
 Simple supervised GraphSAGE model as well as examples running the model
 on the Cora and Pubmed datasets.
@@ -144,7 +144,7 @@ def run_ppi(device, opt):
     xent = nn.BCELoss()
     Act = nn.Sigmoid()
 
-    optimizer = torch.optim.SGD(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre, momentum = opt.momentum_pre)
+    optimizer = torch.optim.Adam(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre)
     #encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.8)
     times = []
     loss_Data = []

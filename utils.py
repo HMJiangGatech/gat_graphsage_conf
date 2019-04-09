@@ -543,7 +543,7 @@ def plotDiagramM(dataset, data, model, labels, nBins,  time, multiL = 0):
     conf = [ np.array(conf)[i] / np.array(cnt)[i] if np.array(cnt)[i]>0 else 0 for i in range(nBins)]
     accu = [ np.array(accu)[i] / np.array(cnt)[i] if np.array(cnt)[i]>0 else 0 for i in range(nBins)]
     print(bins)
-    f1 = plt.figure(1)
+    f1 = plt.figure(multiL)
     plt.subplot(211)
     plt.hist(Sconf, bins=nBins, color = 'blue', alpha = 0.5)
     plt.xlabel('Confidence')
