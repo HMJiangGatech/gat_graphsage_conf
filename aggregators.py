@@ -117,7 +117,7 @@ class MeanAggregator(nn.Module):
         attention = F.softmax(attention, dim=1)
         
         
-        to_feats = mask.mm(embed_matrix)
+        to_feats = attention.mm(embed_matrix)
         
         
         combined = self.fc1(   self.weight.mm(to_feats.t()))
