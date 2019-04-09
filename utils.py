@@ -551,7 +551,7 @@ def plotDiagramM(dataset, data, model, labels, nBins,  time, multiL = 0):
     plt.title('Conf Histogram')
     #plt.ylim(0,1)
     plt.subplot(212)
-    print(cnt, accu,conf)
+    print(sum(cnt), cnt, accu,conf)
     plt.bar([i/nBins for i in range(nBins)],accu, width = 1/nBins, color = 'blue', alpha = 0.25)
     plt.bar([i/nBins for i in range(nBins)],conf, width = 1/nBins, color = 'red', alpha = 0.25)
     plt.xlim(0,1)
