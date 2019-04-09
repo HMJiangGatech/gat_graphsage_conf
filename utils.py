@@ -503,8 +503,8 @@ def plotDiagram(dataset, data, model, labels, nBins, time, multiL = 0):
     plt.bar([i/nBins for i in range(nBins)],accu, width = 1/nBins, color = 'blue', alpha = 0.25)
     plt.bar([i/nBins for i in range(nBins)],conf, width = 1/nBins, color = 'red', alpha = 0.25)
     plt.xlim(0,1)
-    plt.ylabel('Confidence')
-    plt.xlabel('Accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Confidence')
     plt.title('Reliability Diagram')
     f1.savefig("result/"+dataset+"/Diagram of confidence" + time.strftime(ISOTIMEFORMAT)+ str(multiL)+".png", format="PNG")
     return before_temperature_ece
@@ -555,8 +555,8 @@ def plotDiagramM(dataset, data, model, labels, nBins,  time, multiL = 0):
     plt.bar([i/nBins for i in range(nBins)],accu, width = 1/nBins, color = 'blue', alpha = 0.25)
     plt.bar([i/nBins for i in range(nBins)],conf, width = 1/nBins, color = 'red', alpha = 0.25)
     plt.xlim(0,1)
-    plt.ylabel('Confidence')
-    plt.xlabel('Accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Confidence')
     plt.title('Reliability Diagram')
     f1.savefig("result/"+dataset+"/Diagram of confidence" + time.strftime(ISOTIMEFORMAT)+ str(multiL)+".png", format="PNG")
     return before_temperature_ece
