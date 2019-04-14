@@ -145,7 +145,7 @@ def run_ppi(device, opt):
     Act = nn.Sigmoid()
 
     optimizer = torch.optim.Adam(filter(lambda p : p.requires_grad, graphsage.parameters()), lr= opt.lr_pre)
-    encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.8)
+    encoder_scheduler = StepLR(optimizer,step_size=100,gamma=0.6)
     times = []
     loss_Data = []
     confList = Variable(torch.zeros(num_nodes)).to(device) 
