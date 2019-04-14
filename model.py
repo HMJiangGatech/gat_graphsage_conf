@@ -349,6 +349,8 @@ if __name__ == "__main__":
     opt = TrainOptions().parse()
     if opt.dataset  == 'cora':
         opt.k = 80
+        opt.lr_pre = 1e-4
+        opt.epoch = 400
     elif opt.dataset  =='pubmed':
         opt.k = 50
         opt.lr_pre = 5e-4

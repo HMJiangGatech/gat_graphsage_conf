@@ -1,0 +1,9 @@
+Namespace(dataroot='./data', dataset='cora', epoch=150, gamma=0.8, isTrain=True, k=80, lr_pre=0.03, lr_slf=0.03, momentum_pre=0.9, momentum_slf=0.9, num_features=1433, num_hidden=180, res_path='result/cora/result_para', step_size=100, thres=0.995)
+loading cora dataset
+training sample size:140
+[160  28  38  83  71  62  58]
+[123.0, 22.0, 33.0, 50.0, 48.0, 55.0, 44.0]
+[0.76875    0.78571429 0.86842105 0.60240964 0.67605634 0.88709677
+ 0.75862069]
+Validation ACCU:0.75
+ECE error:0.29849526286125183
