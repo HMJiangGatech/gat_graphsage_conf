@@ -356,7 +356,7 @@ if __name__ == "__main__":
         opt.lr_pre = 5e-4
     elif opt.dataset  == 'ppi':
         opt.lr_pre = 5e-4
-        opt.k = 100
+        opt.k = 500
         opt.num_hidden = 150
         opt.epoch = 1000
     elif opt.dataset  == 'reddit':
