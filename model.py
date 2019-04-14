@@ -247,6 +247,8 @@ def run_ppi(device, opt):
             labels[int(key)] = np.array(class_map[key][clsInd])
         test_out = [1 if i>0.5 else 0 for i in test_output[:,clsInd]]
         print ("Avg Validation ACCU of class: %.3f" % (accuracy_score(labels[test], test_out)))
+        writetofile("Avg Validation ACCU of class: " + str(accuracy_score(labels[test], test_out)), opt.res_path, filetime)
+        
         accu.append(accuracy_score(labels[test], test_out))
         loss_DataSelf = []
         ece = plotDiagramM(opt.dataset, val, graphsage, labels[np.array(val)], 10,  filetime, multiL = clsInd)
