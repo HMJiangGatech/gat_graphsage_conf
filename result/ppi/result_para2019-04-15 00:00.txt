@@ -1,0 +1,136 @@
+Namespace(dataroot='./data', dataset='ppi', epoch=10, gamma=0.8, isTrain=True, k=500, lr_pre=0.0005, lr_slf=0.03, momentum_pre=0.9, momentum_slf=0.9, num_features=1433, num_hidden=150, res_path='result/ppi/result_para', step_size=100, thres=0.995)
+loading ppi dataset
+training sample size:41297
+Avg Validation ACCU of class: 0.6457018927444795
+Avg Validation ACCU :0.005336379278879996
+ Avg ECE error :0.001119984082939211
+ Max ECE error :0.13551807403564453
+ Min ECE error :0.13551807403564453
+Namespace(dataroot='./data', dataset='ppi', epoch=1000, gamma=0.8, isTrain=True, k=500, lr_pre=0.0005, lr_slf=0.03, momentum_pre=0.9, momentum_slf=0.9, num_features=1433, num_hidden=150, res_path='result/ppi/result_para', step_size=100, thres=0.995)
+loading ppi dataset
+training sample size:41297
+Avg Validation ACCU of class: 0.6510252365930599
+Avg Validation ACCU of class: 0.7628154574132492
+Avg Validation ACCU of class: 0.7939668769716088
+Avg Validation ACCU of class: 0.7545347003154574
+Avg Validation ACCU of class: 0.8647476340694006
+Avg Validation ACCU of class: 0.8024447949526814
+Avg Validation ACCU of class: 0.7509858044164038
+Avg Validation ACCU of class: 0.6427444794952681
+Avg Validation ACCU of class: 0.833596214511041
+Avg Validation ACCU of class: 0.6399842271293376
+Avg Validation ACCU of class: 0.7758280757097792
+Avg Validation ACCU of class: 0.7685331230283912
+Avg Validation ACCU of class: 0.7064274447949527
+Avg Validation ACCU of class: 0.8162460567823344
+Avg Validation ACCU of class: 0.8154574132492114
+Avg Validation ACCU of class: 0.6338722397476341
+Avg Validation ACCU of class: 0.894518927444795
+Avg Validation ACCU of class: 0.8610015772870663
+Avg Validation ACCU of class: 0.7365930599369085
+Avg Validation ACCU of class: 0.5658517350157729
+Avg Validation ACCU of class: 0.8012618296529969
+Avg Validation ACCU of class: 0.6273659305993691
+Avg Validation ACCU of class: 0.7675473186119873
+Avg Validation ACCU of class: 0.660686119873817
+Avg Validation ACCU of class: 0.8314274447949527
+Avg Validation ACCU of class: 0.639589905362776
+Avg Validation ACCU of class: 0.6788249211356467
+Avg Validation ACCU of class: 0.6559542586750788
+Avg Validation ACCU of class: 0.7107649842271293
+Avg Validation ACCU of class: 0.824723974763407
+Avg Validation ACCU of class: 0.6796135646687698
+Avg Validation ACCU of class: 0.8572555205047319
+Avg Validation ACCU of class: 0.8951104100946372
+Avg Validation ACCU of class: 0.8416798107255521
+Avg Validation ACCU of class: 0.7876577287066246
+Avg Validation ACCU of class: 0.6541798107255521
+Avg Validation ACCU of class: 0.8014589905362776
+Avg Validation ACCU of class: 0.7912066246056783
+Avg Validation ACCU of class: 0.5883280757097792
+Avg Validation ACCU of class: 0.7789826498422713
+Avg Validation ACCU of class: 0.8499605678233438
+Avg Validation ACCU of class: 0.7977129337539433
+Avg Validation ACCU of class: 0.7996845425867508
+Avg Validation ACCU of class: 0.8024447949526814
+Avg Validation ACCU of class: 0.8710567823343849
+Avg Validation ACCU of class: 0.7174684542586751
+Avg Validation ACCU of class: 0.6035094637223974
+Avg Validation ACCU of class: 0.5960173501577287
+Avg Validation ACCU of class: 0.7624211356466877
+Avg Validation ACCU of class: 0.771096214511041
+Avg Validation ACCU of class: 0.6474763406940063
+Avg Validation ACCU of class: 0.7109621451104101
+Avg Validation ACCU of class: 0.568217665615142
+Avg Validation ACCU of class: 0.5822160883280757
+Avg Validation ACCU of class: 0.7563091482649842
+Avg Validation ACCU of class: 0.7365930599369085
+Avg Validation ACCU of class: 0.8375394321766562
+Avg Validation ACCU of class: 0.8377365930599369
+Avg Validation ACCU of class: 0.8223580441640379
+Avg Validation ACCU of class: 0.767941640378549
+Avg Validation ACCU of class: 0.54948738170347
+Avg Validation ACCU of class: 0.8442429022082019
+Avg Validation ACCU of class: 0.8152602523659306
+Avg Validation ACCU of class: 0.7789826498422713
+Avg Validation ACCU of class: 0.7965299684542587
+Avg Validation ACCU of class: 0.8775630914826499
+Avg Validation ACCU of class: 0.5035488958990536
+Avg Validation ACCU of class: 0.6711356466876972
+Avg Validation ACCU of class: 0.507294952681388
+Avg Validation ACCU of class: 0.6983438485804416
+Avg Validation ACCU of class: 0.7624211356466877
+Avg Validation ACCU of class: 0.8314274447949527
+Avg Validation ACCU of class: 0.8375394321766562
+Avg Validation ACCU of class: 0.706230283911672
+Avg Validation ACCU of class: 0.8091482649842271
+Avg Validation ACCU of class: 0.8091482649842271
+Avg Validation ACCU of class: 0.6614747634069401
+Avg Validation ACCU of class: 0.8610015772870663
+Avg Validation ACCU of class: 0.7292981072555205
+Avg Validation ACCU of class: 0.7655757097791798
+Avg Validation ACCU of class: 0.7738564668769716
+Avg Validation ACCU of class: 0.5035488958990536
+Avg Validation ACCU of class: 0.7192429022082019
+Avg Validation ACCU of class: 0.8134858044164038
+Avg Validation ACCU of class: 0.8408911671924291
+Avg Validation ACCU of class: 0.5782728706624606
+Avg Validation ACCU of class: 0.9055599369085173
+Avg Validation ACCU of class: 0.7162854889589906
+Avg Validation ACCU of class: 0.7210173501577287
+Avg Validation ACCU of class: 0.801064668769716
+Avg Validation ACCU of class: 0.8308359621451105
+Avg Validation ACCU of class: 0.7334384858044164
+Avg Validation ACCU of class: 0.6656151419558359
+Avg Validation ACCU of class: 0.8231466876971609
+Avg Validation ACCU of class: 0.8057965299684543
+Avg Validation ACCU of class: 0.6967665615141956
+Avg Validation ACCU of class: 0.8278785488958991
+Avg Validation ACCU of class: 0.5837933753943217
+Avg Validation ACCU of class: 0.560922712933754
+Avg Validation ACCU of class: 0.7387618296529969
+Avg Validation ACCU of class: 0.5177444794952681
+Avg Validation ACCU of class: 0.75
+Avg Validation ACCU of class: 0.8365536277602523
+Avg Validation ACCU of class: 0.70051261829653
+Avg Validation ACCU of class: 0.8144716088328076
+Avg Validation ACCU of class: 0.7087933753943217
+Avg Validation ACCU of class: 0.7058359621451105
+Avg Validation ACCU of class: 0.7947555205047319
+Avg Validation ACCU of class: 0.5136041009463722
+Avg Validation ACCU of class: 0.6350552050473186
+Avg Validation ACCU of class: 0.669558359621451
+Avg Validation ACCU of class: 0.8164432176656151
+Avg Validation ACCU of class: 0.7202287066246057
+Avg Validation ACCU of class: 0.7111593059936908
+Avg Validation ACCU of class: 0.8000788643533123
+Avg Validation ACCU of class: 0.5798501577287066
+Avg Validation ACCU of class: 0.8925473186119873
+Avg Validation ACCU of class: 0.7787854889589906
+Avg Validation ACCU of class: 0.8284700315457413
+Avg Validation ACCU of class: 0.5703864353312302
+Avg Validation ACCU of class: 0.7531545741324921
+Avg Validation ACCU :0.7383251427379619
+ Avg ECE error :0.41945209359550034
+ Max ECE error :0.7815802693367004
+ Min ECE error :0.00398214440792799
