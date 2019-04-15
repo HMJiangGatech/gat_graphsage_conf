@@ -238,7 +238,7 @@ def run_ppi(device, opt):
             
             writetofile("Validation ACCU:"+str( accuracy_score(labels[test], out_putT )), opt.res_path, filetime)
         
-         '''  
+         '''
     test_output =  Act(graphsage(test))
     #summary(opt.dataset, test, labels, test_output.data.cpu().numpy().argmax(axis = 1), num_cls, filetime, output = test_output , outlog = True)
     for clsInd in range(num_cls):
